@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>РотанКашпо — Магазин кашпо з ротангу</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" id="header">
+    <div class="container header-inner">
+        <a href="#" class="logo">
+            <span class="logo-icon">🌿</span>
+            <span class="logo-text">РотанКашпо</span>
+        </a>
+        <nav class="nav">
+            <a href="#catalog">Каталог</a>
+            <a href="#about">Про нас</a>
+            <a href="#reviews">Відгуки</a>
+            <a href="#contact">Контакти</a>
+        </nav>
+        <button class="cart-btn" id="cartBtn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+        <p class="hero-tag">Ручна робота • Натуральні матеріали</p>
+        <h1 class="hero-title">Кашпо з ротангу<br><span>для вашого затишку</span></h1>
+        <p class="hero-desc">Стильні, екологічні кашпо ручної роботи з натурального ротангу. Додайте природну естетику вашому дому чи офісу.</p>
+        <div class="hero-actions">
+            <a href="#catalog" class="btn btn-primary">Переглянути каталог</a>
+            <a href="#about" class="btn btn-outline">Дізнатись більше</a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-num">500+</span>
+                <span class="stat-label">задоволених клієнтів</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num">100%</span>
+                <span class="stat-label">натуральні матеріали</span>
+            </div>
+            <div class="stat">
+                <span class="stat-num">50+</span>
+                <span class="stat-label">моделей кашпо</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌱</div>
+                <h3>Екологічно</h3>
+                <p>Тільки натуральний ротанг — жодного пластику. Бережемо природу разом.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✋</div>
+                <h3>Ручна робота</h3>
+                <p>Кожне кашпо плететься вручну майстрами з багаторічним досвідом.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <h3>Доставка по Україні</h3>
+                <p>Безкоштовна доставка Новою Поштою при замовленні від 1000 грн.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💧</div>
+                <h3>Вологостійкість</h3>
+                <p>Спеціальне покриття захищає ротанг від вологи та продовжує термін служби.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Catalog -->
+<section class="catalog" id="catalog">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-tag">Наша колекція</p>
+            <h2 class="section-title">Каталог кашпо</h2>
+            <p class="section-desc">Оберіть ідеальне кашпо для вашого інтер'єру</p>
+        </div>
+
+        <div class="catalog-filters">
+            <button class="filter-btn active" data-filter="all">Всі</button>
+            <button class="filter-btn" data-filter="small">Маленькі</button>
+            <button class="filter-btn" data-filter="medium">Середні</button>
+            <button class="filter-btn" data-filter="large">Великі</button>
+            <button class="filter-btn" data-filter="set">Набори</button>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be inserted by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+    <div class="container about-grid">
+        <div class="about-images">
+            <div class="about-img about-img-1">
+                <div class="about-img-placeholder">
+                    <span>🧶</span>
+                    <p>Процес плетіння</p>
+                </div>
+            </div>
+            <div class="about-img about-img-2">
+                <div class="about-img-placeholder">
+                    <span>🌿</span>
+                    <p>Натуральний ротанг</p>
+                </div>
+            </div>
+        </div>
+        <div class="about-content">
+            <p class="section-tag">Наша історія</p>
+            <h2 class="section-title">Про РотанКашпо</h2>
+            <p>Ми — невелика українська майстерня, що спеціалізується на виробництві кашпо з натурального ротангу. Кожен виріб створюється вручну з любов'ю до деталей.</p>
+            <p>Наша місія — зробити ваш дім затишнішим та екологічнішим. Ми використовуємо лише сертифіковані матеріали та дбаємо про навколишнє середовище.</p>
+            <div class="about-highlights">
+                <div class="highlight">
+                    <span class="highlight-icon">✓</span>
+                    <span>Сертифікований ротанг</span>
+                </div>
+                <div class="highlight">
+                    <span class="highlight-icon">✓</span>
+                    <span>Гарантія 2 роки</span>
+                </div>
+                <div class="highlight">
+                    <span class="highlight-icon">✓</span>
+                    <span>Індивідуальні замовлення</span>
+                </div>
+                <div class="highlight">
+                    <span class="highlight-icon">✓</span>
+                    <span>Швидка доставка</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews -->
+<section class="reviews" id="reviews">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-tag">Відгуки клієнтів</p>
+            <h2 class="section-title">Що кажуть наші покупці</h2>
+        </div>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Замовляла набір з 3 кашпо для балкону. Якість чудова, виглядають розкішно! Доставили за 2 дні."</p>
+                <div class="review-author">
+                    <div class="review-avatar">ОК</div>
+                    <div>
+                        <p class="review-name">Олена Коваленко</p>
+                        <p class="review-date">Жовтень 2026</p>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Купив велике кашпо для монстери — ідеально підійшло! Ротанг дуже якісний, плетіння акуратне."</p>
+                <div class="review-author">
+                    <div class="review-avatar">АМ</div>
+                    <div>
+                        <p class="review-name">Андрій Мельник</p>
+                        <p class="review-date">Вересень 2026</p>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                <p class="review-text">"Дуже задоволена покупкою! Кашпо виглядає навіть краще, ніж на фото. Рекомендую цей магазин!"</p>
+                <div class="review-author">
+                    <div class="review-avatar">МШ</div>
+                    <div>
+                        <p class="review-name">Марія Шевченко</p>
+                        <p class="review-date">Серпень 2026</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="cta">
+    <div class="container cta-inner">
+        <h2>Знижка 15% на перше замовлення!</h2>
+        <p>Використовуйте промокод <strong>РОТАН15</strong> при оформленні</p>
+        <a href="#catalog" class="btn btn-primary btn-lg">Обрати кашпо</a>
+    </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+    <div class="container contact-grid">
+        <div class="contact-info">
+            <p class="section-tag">Зв'яжіться з нами</p>
+            <h2 class="section-title">Контакти</h2>
+            <p>Маєте питання? Напишіть нам або зателефонуйте — ми завжди раді допомогти!</p>
+            <div class="contact-details">
+                <div class="contact-item">
+                    <span class="contact-icon">📞</span>
+                    <div>
+                        <p class="contact-label">Телефон</p>
+                        <a href="tel:+380991234567">+380 99 123 45 67</a>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">📧</span>
+                    <div>
+                        <p class="contact-label">Email</p>
+                        <a href="mailto:info@rotankashpo.ua">info@rotankashpo.ua</a>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">📍</span>
+                    <div>
+                        <p class="contact-label">Адреса</p>
+                        <p>м. Київ, вул. Хрещатик 10</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">🕐</span>
+                    <div>
+                        <p class="contact-label">Графік роботи</p>
+                        <p>Пн-Пт: 9:00-18:00, Сб: 10:00-15:00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="social-links">
+                <a href="#" class="social-link" title="Instagram">📸</a>
+                <a href="#" class="social-link" title="Telegram">✈️</a>
+                <a href="#" class="social-link" title="Facebook">👥</a>
+            </div>
+        </div>
+        <div class="contact-form-wrap">
+            <form class="contact-form" id="contactForm">
+                <h3>Напишіть нам</h3>
+                <div class="form-group">
+                    <input type="text" placeholder="Ваше ім'я" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" placeholder="Телефон" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <textarea rows="4" placeholder="Ваше повідомлення..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Надіслати</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container footer-inner">
+        <div class="footer-brand">
+            <a href="#" class="logo">
+                <span class="logo-icon">🌿</span>
+                <span class="logo-text">РотанКашпо</span>
+            </a>
+            <p>Стильні кашпо з натурального ротангу для вашого дому.</p>
+        </div>
+        <div class="footer-links">
+            <h4>Навігація</h4>
+            <a href="#catalog">Каталог</a>
+            <a href="#about">Про нас</a>
+            <a href="#reviews">Відгуки</a>
+            <a href="#contact">Контакти</a>
+        </div>
+        <div class="footer-links">
+            <h4>Інформація</h4>
+            <a href="#">Доставка і оплата</a>
+            <a href="#">Повернення</a>
+            <a href="#">Гарантія</a>
+            <a href="#">Політика конфіденційності</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>© 2026 РотанКашпо. Всі права захищені. 🇺🇦</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Cart Sidebar -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+        <h3>🛒 Кошик</h3>
+        <button class="cart-close" id="cartClose">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+        <p class="cart-empty">Кошик порожній</p>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+        <div class="cart-total">
+            <span>Разом:</span>
+            <span id="cartTotal">0 грн</span>
+        </div>
+        <button class="btn btn-primary btn-full" id="checkoutBtn">Оформити замовлення</button>
+    </div>
+</div>
+
+<!-- Order Modal -->
+<div class="modal-overlay" id="orderModal">
+    <div class="modal">
+        <button class="modal-close" id="modalClose">✕</button>
+        <h3>📦 Оформлення замовлення</h3>
+        <form id="orderForm">
+            <div class="form-group">
+                <input type="text" placeholder="Ваше ім'я *" required>
+            </div>
+            <div class="form-group">
+                <input type="tel" placeholder="Телефон *" required>
+            </div>
+            <div class="form-group">
+                <input type="text" placeholder="Місто *" required>
+            </div>
+            <div class="form-group">
+                <input type="text" placeholder="Відділення Нової Пошти *" required>
+            </div>
+            <div class="form-group">
+                <textarea rows="3" placeholder="Коментар до замовлення"></textarea>
+            </div>
+            <div class="order-summary">
+                <p>До сплати: <strong id="orderTotal">0 грн</strong></p>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Підтвердити замовлення</button>
+        </form>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
