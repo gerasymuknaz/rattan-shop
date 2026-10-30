@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РотанКашпо — Магазин кашпо з ротангу</title>
+    <title>ПоліКашпо — Кашпо з поліротангу</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -14,10 +14,10 @@
 <header class="header" id="header">
     <div class="container header-inner">
         <a href="#" class="logo">
-            <span class="logo-icon">🌿</span>
-            <span class="logo-text">РотанКашпо</span>
+            <span class="logo-icon">🪴</span>
+            <span class="logo-text">ПоліКашпо</span>
         </a>
-        <nav class="nav">
+        <nav class="nav" id="mainNav">
             <a href="#catalog">Каталог</a>
             <a href="#about">Про нас</a>
             <a href="#reviews">Відгуки</a>
@@ -40,9 +40,9 @@
 <section class="hero">
     <div class="hero-bg"></div>
     <div class="container hero-content">
-        <p class="hero-tag">Ручна робота • Натуральні матеріали</p>
-        <h1 class="hero-title">Кашпо з ротангу<br><span>для вашого затишку</span></h1>
-        <p class="hero-desc">Стильні, екологічні кашпо ручної роботи з натурального ротангу. Додайте природну естетику вашому дому чи офісу.</p>
+        <p class="hero-tag">Практичність • Стиль • Довговічність</p>
+        <h1 class="hero-title">Кашпо з поліротангу<br><span>красиво і практично</span></h1>
+        <p class="hero-desc">Стильні кашпо з штучного ротангу — виглядають як натуральні, але служать у рази довше. Не бояться дощу, сонця і морозу.</p>
         <div class="hero-actions">
             <a href="#catalog" class="btn btn-primary">Переглянути каталог</a>
             <a href="#about" class="btn btn-outline">Дізнатись більше</a>
@@ -53,8 +53,8 @@
                 <span class="stat-label">задоволених клієнтів</span>
             </div>
             <div class="stat">
-                <span class="stat-num">100%</span>
-                <span class="stat-label">натуральні матеріали</span>
+                <span class="stat-num">10+</span>
+                <span class="stat-label">років служби</span>
             </div>
             <div class="stat">
                 <span class="stat-num">50+</span>
@@ -69,24 +69,24 @@
     <div class="container">
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">🌱</div>
-                <h3>Екологічно</h3>
-                <p>Тільки натуральний ротанг — жодного пластику. Бережемо природу разом.</p>
+                <div class="feature-icon">💪</div>
+                <h3>Довговічність</h3>
+                <p>Поліротанг служить 10+ років без втрати вигляду. Не гниє, не тріскається, не ламається.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">✋</div>
-                <h3>Ручна робота</h3>
-                <p>Кожне кашпо плететься вручну майстрами з багаторічним досвідом.</p>
+                <div class="feature-icon">☀️</div>
+                <h3>UV-стійкість</h3>
+                <p>Не вигоряє на сонці завдяки UV-захисту. Кольори залишаються яскравими роками.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">🚚</div>
-                <h3>Доставка по Україні</h3>
-                <p>Безкоштовна доставка Новою Поштою при замовленні від 1000 грн.</p>
+                <div class="feature-icon">🌧️</div>
+                <h3>Водостійкість</h3>
+                <p>Не боїться дощу, снігу та вологи. Ідеально для вулиці, балконів і терас.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">💧</div>
-                <h3>Вологостійкість</h3>
-                <p>Спеціальне покриття захищає ротанг від вологи та продовжує термін служби.</p>
+                <div class="feature-icon">🧹</div>
+                <h3>Легкий догляд</h3>
+                <p>Просто протріть вологою ганчіркою — і кашпо як нове. Жодного спеціального догляду.</p>
             </div>
         </div>
     </div>
@@ -98,9 +98,8 @@
         <div class="section-header">
             <p class="section-tag">Наша колекція</p>
             <h2 class="section-title">Каталог кашпо</h2>
-            <p class="section-desc">Оберіть ідеальне кашпо для вашого інтер'єру</p>
+            <p class="section-desc">Оберіть ідеальне кашпо для вашого інтер'єру чи двору</p>
         </div>
-
         <div class="catalog-filters">
             <button class="filter-btn active" data-filter="all">Всі</button>
             <button class="filter-btn" data-filter="small">Маленькі</button>
@@ -108,10 +107,7 @@
             <button class="filter-btn" data-filter="large">Великі</button>
             <button class="filter-btn" data-filter="set">Набори</button>
         </div>
-
-        <div class="products-grid" id="productsGrid">
-            <!-- Products will be inserted by JS -->
-        </div>
+        <div class="products-grid" id="productsGrid"></div>
     </div>
 </section>
 
@@ -121,38 +117,38 @@
         <div class="about-images">
             <div class="about-img about-img-1">
                 <div class="about-img-placeholder">
-                    <span>🧶</span>
-                    <p>Процес плетіння</p>
+                    <span>🏭</span>
+                    <p>Виробництво</p>
                 </div>
             </div>
             <div class="about-img about-img-2">
                 <div class="about-img-placeholder">
-                    <span>🌿</span>
-                    <p>Натуральний ротанг</p>
+                    <span>🪴</span>
+                    <p>Поліротанг</p>
                 </div>
             </div>
         </div>
         <div class="about-content">
             <p class="section-tag">Наша історія</p>
-            <h2 class="section-title">Про РотанКашпо</h2>
-            <p>Ми — невелика українська майстерня, що спеціалізується на виробництві кашпо з натурального ротангу. Кожен виріб створюється вручну з любов'ю до деталей.</p>
-            <p>Наша місія — зробити ваш дім затишнішим та екологічнішим. Ми використовуємо лише сертифіковані матеріали та дбаємо про навколишнє середовище.</p>
+            <h2 class="section-title">Про ПоліКашпо</h2>
+            <p>Ми спеціалізуємось на виробництві та продажу кашпо зі штучного ротангу (поліротангу). Наші вироби поєднують естетику натурального плетіння з практичністю сучасних матеріалів.</p>
+            <p>Поліротанг — це синтетичне волокно, яке імітує натуральний ротанг, але значно перевершує його за міцністю та довговічністю. Ідеально підходить як для дому, так і для вулиці.</p>
             <div class="about-highlights">
                 <div class="highlight">
                     <span class="highlight-icon">✓</span>
-                    <span>Сертифікований ротанг</span>
+                    <span>Морозостійкість до -30°C</span>
                 </div>
                 <div class="highlight">
                     <span class="highlight-icon">✓</span>
-                    <span>Гарантія 2 роки</span>
+                    <span>Гарантія 3 роки</span>
                 </div>
                 <div class="highlight">
                     <span class="highlight-icon">✓</span>
-                    <span>Індивідуальні замовлення</span>
+                    <span>Легкі — просто переставити</span>
                 </div>
                 <div class="highlight">
                     <span class="highlight-icon">✓</span>
-                    <span>Швидка доставка</span>
+                    <span>Безкоштовна доставка</span>
                 </div>
             </div>
         </div>
@@ -169,7 +165,7 @@
         <div class="reviews-grid">
             <div class="review-card">
                 <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                <p class="review-text">"Замовляла набір з 3 кашпо для балкону. Якість чудова, виглядають розкішно! Доставили за 2 дні."</p>
+                <p class="review-text">"Стоять на терасі вже 2 роки — виглядають як нові! Ніякого вигоряння, ніякого пошкодження від дощу. Супер якість!"</p>
                 <div class="review-author">
                     <div class="review-avatar">ОК</div>
                     <div>
@@ -180,7 +176,7 @@
             </div>
             <div class="review-card">
                 <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                <p class="review-text">"Купив велике кашпо для монстери — ідеально підійшло! Ротанг дуже якісний, плетіння акуратне."</p>
+                <p class="review-text">"Думав що пластик буде виглядати дешево — помилявся! Виглядає як справжній ротанг, а за якістю навіть краще. Раджу!"</p>
                 <div class="review-author">
                     <div class="review-avatar">АМ</div>
                     <div>
@@ -191,7 +187,7 @@
             </div>
             <div class="review-card">
                 <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                <p class="review-text">"Дуже задоволена покупкою! Кашпо виглядає навіть краще, ніж на фото. Рекомендую цей магазин!"</p>
+                <p class="review-text">"Купила набір з 5 кашпо для квітів у дворі. Пережили зиму без проблем! Мию просто шлангом — і вони чисті."</p>
                 <div class="review-author">
                     <div class="review-avatar">МШ</div>
                     <div>
@@ -208,7 +204,7 @@
 <section class="cta">
     <div class="container cta-inner">
         <h2>Знижка 15% на перше замовлення!</h2>
-        <p>Використовуйте промокод <strong>РОТАН15</strong> при оформленні</p>
+        <p>Використовуйте промокод <strong>ПОЛІ15</strong> при оформленні</p>
         <a href="#catalog" class="btn btn-primary btn-lg">Обрати кашпо</a>
     </div>
 </section>
@@ -225,35 +221,35 @@
                     <span class="contact-icon">📞</span>
                     <div>
                         <p class="contact-label">Телефон</p>
-                        <a href="tel:+380991234567">+380 99 123 45 67</a>
+                        <a href="tel:+380991234567" id="sitePhone">+380 99 123 45 67</a>
                     </div>
                 </div>
                 <div class="contact-item">
                     <span class="contact-icon">📧</span>
                     <div>
                         <p class="contact-label">Email</p>
-                        <a href="mailto:info@rotankashpo.ua">info@rotankashpo.ua</a>
+                        <a href="mailto:info@polikashpo.ua" id="siteEmail">info@polikashpo.ua</a>
                     </div>
                 </div>
                 <div class="contact-item">
                     <span class="contact-icon">📍</span>
                     <div>
                         <p class="contact-label">Адреса</p>
-                        <p>м. Київ, вул. Хрещатик 10</p>
+                        <p id="siteAddress">м. Київ, вул. Хрещатик 10</p>
                     </div>
                 </div>
                 <div class="contact-item">
                     <span class="contact-icon">🕐</span>
                     <div>
                         <p class="contact-label">Графік роботи</p>
-                        <p>Пн-Пт: 9:00-18:00, Сб: 10:00-15:00</p>
+                        <p id="siteHours">Пн-Пт: 9:00-18:00, Сб: 10:00-15:00</p>
                     </div>
                 </div>
             </div>
             <div class="social-links">
-                <a href="#" class="social-link" title="Instagram">📸</a>
-                <a href="#" class="social-link" title="Telegram">✈️</a>
-                <a href="#" class="social-link" title="Facebook">👥</a>
+                <a href="#" class="social-link" title="Instagram" id="socialInsta">📸</a>
+                <a href="#" class="social-link" title="Telegram" id="socialTg">✈️</a>
+                <a href="#" class="social-link" title="Facebook" id="socialFb">👥</a>
             </div>
         </div>
         <div class="contact-form-wrap">
@@ -282,10 +278,10 @@
     <div class="container footer-inner">
         <div class="footer-brand">
             <a href="#" class="logo">
-                <span class="logo-icon">🌿</span>
-                <span class="logo-text">РотанКашпо</span>
+                <span class="logo-icon">🪴</span>
+                <span class="logo-text">ПоліКашпо</span>
             </a>
-            <p>Стильні кашпо з натурального ротангу для вашого дому.</p>
+            <p>Стильні кашпо з поліротангу для дому, балкону та двору.</p>
         </div>
         <div class="footer-links">
             <h4>Навігація</h4>
@@ -303,8 +299,9 @@
         </div>
     </div>
     <div class="footer-bottom">
-        <div class="container">
-            <p>© 2026 РотанКашпо. Всі права захищені. 🇺🇦</p>
+        <div class="container footer-bottom-inner">
+            <p>© 2026 ПоліКашпо. Всі права захищені. 🇺🇦</p>
+            <button class="admin-login-link" id="adminLoginLink">🔒</button>
         </div>
     </div>
 </footer>
@@ -357,10 +354,170 @@
     </div>
 </div>
 
+<!-- Admin Login Modal -->
+<div class="modal-overlay" id="adminLoginModal">
+    <div class="modal admin-login-modal">
+        <button class="modal-close" id="adminLoginClose">✕</button>
+        <h3>🔐 Вхід в адмін панель</h3>
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label>Логін</label>
+                <input type="text" id="adminUser" placeholder="Логін" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="adminPass" placeholder="Пароль" required autocomplete="off">
+            </div>
+            <p class="admin-error" id="adminError"></p>
+            <button type="submit" class="btn btn-primary btn-full">Увійти</button>
+        </form>
+    </div>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+    <div class="admin-panel-inner">
+        <div class="admin-header">
+            <h2>⚙️ Адмін панель</h2>
+            <button class="btn btn-outline admin-logout" id="adminLogout">Вийти</button>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="contacts">📞 Контакти</button>
+            <button class="admin-tab" data-tab="products">🛍 Товари</button>
+            <button class="admin-tab" data-tab="hero">🏠 Головна</button>
+            <button class="admin-tab" data-tab="social">🔗 Соцмережі</button>
+        </div>
+
+        <!-- Contacts Tab -->
+        <div class="admin-tab-content active" id="tab-contacts">
+            <h3>Контактна інформація</h3>
+            <div class="admin-form-group">
+                <label>Телефон</label>
+                <input type="text" id="adminPhone" placeholder="+380 99 123 45 67">
+            </div>
+            <div class="admin-form-group">
+                <label>Email</label>
+                <input type="email" id="adminEmail" placeholder="info@polikashpo.ua">
+            </div>
+            <div class="admin-form-group">
+                <label>Адреса</label>
+                <input type="text" id="adminAddress" placeholder="м. Київ, вул. Хрещатик 10">
+            </div>
+            <div class="admin-form-group">
+                <label>Графік роботи</label>
+                <input type="text" id="adminHours" placeholder="Пн-Пт: 9:00-18:00, Сб: 10:00-15:00">
+            </div>
+            <button class="btn btn-primary" id="saveContacts">💾 Зберегти контакти</button>
+        </div>
+
+        <!-- Products Tab -->
+        <div class="admin-tab-content" id="tab-products">
+            <h3>Управління товарами</h3>
+            <p class="admin-hint">Натисніть на товар щоб редагувати</p>
+            <div class="admin-products-list" id="adminProductsList"></div>
+        </div>
+
+        <!-- Hero Tab -->
+        <div class="admin-tab-content" id="tab-hero">
+            <h3>Головна сторінка</h3>
+            <div class="admin-form-group">
+                <label>Заголовок (рядок 1)</label>
+                <input type="text" id="adminHeroTitle1" placeholder="Кашпо з поліротангу">
+            </div>
+            <div class="admin-form-group">
+                <label>Заголовок (рядок 2)</label>
+                <input type="text" id="adminHeroTitle2" placeholder="красиво і практично">
+            </div>
+            <div class="admin-form-group">
+                <label>Опис</label>
+                <textarea id="adminHeroDesc" rows="3" placeholder="Опис на головній..."></textarea>
+            </div>
+            <div class="admin-form-group">
+                <label>Промокод</label>
+                <input type="text" id="adminPromo" placeholder="ПОЛІ15">
+            </div>
+            <button class="btn btn-primary" id="saveHero">💾 Зберегти</button>
+        </div>
+
+        <!-- Social Tab -->
+        <div class="admin-tab-content" id="tab-social">
+            <h3>Соціальні мережі</h3>
+            <div class="admin-form-group">
+                <label>Instagram (посилання)</label>
+                <input type="url" id="adminInsta" placeholder="https://instagram.com/...">
+            </div>
+            <div class="admin-form-group">
+                <label>Telegram (посилання)</label>
+                <input type="url" id="adminTg" placeholder="https://t.me/...">
+            </div>
+            <div class="admin-form-group">
+                <label>Facebook (посилання)</label>
+                <input type="url" id="adminFb" placeholder="https://facebook.com/...">
+            </div>
+            <button class="btn btn-primary" id="saveSocial">💾 Зберегти</button>
+        </div>
+
+        <!-- Product Edit Modal inside admin -->
+        <div class="admin-product-edit" id="adminProductEdit" style="display:none;">
+            <div class="admin-product-edit-inner">
+                <h3>✏️ Редагування товару</h3>
+                <input type="hidden" id="editProductId">
+                <div class="admin-form-group">
+                    <label>Назва</label>
+                    <input type="text" id="editProductName">
+                </div>
+                <div class="admin-form-group">
+                    <label>Розмір</label>
+                    <input type="text" id="editProductSize">
+                </div>
+                <div class="admin-form-group">
+                    <label>Ціна (грн)</label>
+                    <input type="number" id="editProductPrice">
+                </div>
+                <div class="admin-form-group">
+                    <label>Стара ціна (грн, 0 = немає)</label>
+                    <input type="number" id="editProductOldPrice">
+                </div>
+                <div class="admin-form-group">
+                    <label>Фото (URL посилання)</label>
+                    <input type="url" id="editProductImage" placeholder="https://...">
+                    <small>Вставте посилання на фото товару</small>
+                </div>
+                <div class="admin-form-group">
+                    <label>Емоджі (якщо без фото)</label>
+                    <input type="text" id="editProductEmoji" maxlength="4">
+                </div>
+                <div class="admin-form-group">
+                    <label>Категорія</label>
+                    <select id="editProductCategory">
+                        <option value="small">Маленькі</option>
+                        <option value="medium">Середні</option>
+                        <option value="large">Великі</option>
+                        <option value="set">Набори</option>
+                    </select>
+                </div>
+                <div class="admin-form-group">
+                    <label>Бейдж</label>
+                    <select id="editProductBadge">
+                        <option value="">Немає</option>
+                        <option value="new">Новинка</option>
+                        <option value="sale">Знижка</option>
+                        <option value="hit">Хіт</option>
+                    </select>
+                </div>
+                <div class="admin-btn-row">
+                    <button class="btn btn-primary" id="saveProduct">💾 Зберегти</button>
+                    <button class="btn btn-outline" id="cancelEditProduct">Скасувати</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script src="script.js"></script>
 </body>
 </html>
-
