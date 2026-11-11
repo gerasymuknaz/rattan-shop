@@ -1,0 +1,129 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Відгуки клієнтів{% endblock %}
+{% block page_title %}Відгуки клієнтів (секція на index.html){% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Відгуки</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Reviews List -->
+    <div class="col-lg-8">
+        <div class="card card-outline card-warning shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-star text-warning mr-1"></i> Список відгуків на сайті
+                </h3>
+            </div>
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 140px;">Автор</th>
+                            <th style="width: 120px;">Місто / Дата</th>
+                            <th style="width: 100px;">Оцінка</th>
+                            <th>Текст відгуку</th>
+                            <th style="width: 90px;" class="text-center">Статус</th>
+                            <th class="text-right" style="width: 110px;">Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reviews %}
+                        <tr>
+                            <td>
+                                <strong>{{ r.author_name }}</strong>
+                            </td>
+                            <td class="text-muted text-xs">
+                                <div>{{ r.city_info or '' }}</div>
+                                <div>{{ r.date_str or '' }}</div>
+                            </td>
+                            <td>
+                                <span class="text-warning font-weight-bold">
+                                    {% for _ in range(r.stars) %}★{% endfor %}
+                                </span>
+                            </td>
+                            <td class="text-sm">«{{ r.text }}»</td>
+                            <td class="text-center">
+                                <form action="{{ url_for('admin_review_toggle_status', id=r.id) }}" method="post" class="d-inline">
+                                    {% if r.is_active %}
+                                        <button type="submit" class="btn btn-xs btn-success" title="Натисніть щоб приховати">
+                                            Активний
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-xs btn-secondary" title="Натисніть щоб показати">
+                                            Прихований
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                            <td class="text-right">
+                                <form action="{{ url_for('admin_review_delete', id=r.id) }}" method="post" onsubmit="return confirm('Видалити відгук?');" class="d-inline">
+                                    <button type="submit" class="btn btn-xs btn-danger" title="Видалити">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                Відгуків ще немає. Додайте перший відгук через форму справа!
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Review Form -->
+    <div class="col-lg-4">
+        <div class="card card-outline card-success shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-plus-circle text-success mr-1"></i> Додати відгук
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('admin_reviews') }}">
+                    <div class="form-group">
+                        <label for="author_name" class="font-weight-bold">Ім'я клієнта</label>
+                        <input type="text" class="form-control" id="author_name" name="author_name" placeholder="наприклад: Олена Коваленко" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city_info">Місто та коментар</label>
+                        <input type="text" class="form-control" id="city_info" name="city_info" placeholder="м. Львів • тераса">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_str">Дата / період</label>
+                        <input type="text" class="form-control" id="date_str" name="date_str" placeholder="Жовтень 2026">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stars">Кількість зірок</label>
+                        <select class="custom-select" id="stars" name="stars">
+                            <option value="5">⭐⭐⭐⭐⭐ (5 зірок)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 зірки)</option>
+                            <option value="3">⭐⭐⭐ (3 зірки)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="text" class="font-weight-bold">Текст відгуку</label>
+                        <textarea class="form-control" id="text" name="text" rows="4" placeholder="Введіть текст відгуку покупця..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-block font-weight-bold shadow-sm">
+                        <i class="fas fa-save mr-1"></i> Опублікувати відгук
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

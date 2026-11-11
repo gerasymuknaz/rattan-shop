@@ -1,0 +1,210 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Налаштування сайту{% endblock %}
+{% block page_title %}Налаштування магазину{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Налаштування</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <form method="post" action="{{ url_for('admin_settings') }}">
+            <!-- Contacts Card -->
+            <div class="card card-outline card-info shadow-sm mb-4">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold">
+                        <i class="fas fa-phone-alt text-info mr-1"></i> Контактні дані магазину
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="site_name" class="font-weight-bold">Назва магазину</label>
+                                <input type="text" class="form-control" id="site_name" name="site_name" 
+                                       value="{{ settings.get('site_name', 'ПоліКашпо') }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone" class="font-weight-bold">Контактний телефон</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="phone" name="phone" 
+                                           value="{{ settings.get('phone', '+380 99 123 45 67') }}" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email" class="font-weight-bold">Електронна пошта (Email)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    </div>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="{{ settings.get('email', 'info@polikashpo.ua') }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="hours" class="font-weight-bold">Графік роботи</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="hours" name="hours" 
+                                           value="{{ settings.get('hours', 'Пн-Пт: 9:00-18:00, Сб: 10:00-15:00') }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label for="address" class="font-weight-bold">Адреса майстерні / магазину</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                            </div>
+                            <input type="text" class="form-control" id="address" name="address" 
+                                   value="{{ settings.get('address', 'м. Київ, вул. Хрещатик 10') }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero & Promo Card -->
+            <div class="card card-outline card-success shadow-sm mb-4">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold">
+                        <i class="fas fa-home text-success mr-1"></i> Тексти головної сторінки та Промокод
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="hero_title1">Заголовок 1 (рядок 1)</label>
+                                <input type="text" class="form-control" id="hero_title1" name="hero_title1" 
+                                       value="{{ settings.get('hero_title1', 'Кашпо з поліротангу') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="hero_title2">Заголовок 2 (рядок 2, виділений)</label>
+                                <input type="text" class="form-control" id="hero_title2" name="hero_title2" 
+                                       value="{{ settings.get('hero_title2', 'красиво і практично') }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hero_desc">Опис під заголовком</label>
+                        <textarea class="form-control" id="hero_desc" name="hero_desc" rows="3">{{ settings.get('hero_desc', '') }}</textarea>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label for="promo" class="font-weight-bold">Активний промокод магазину</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-ticket-alt"></i></span>
+                            </div>
+                            <input type="text" class="form-control font-weight-bold text-uppercase" id="promo" name="promo" 
+                                   value="{{ settings.get('promo', 'ПОЛІ15') }}">
+                        </div>
+                        <small class="form-text text-muted">Промокод дає знижку 15% при оформленні замовлення</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Media Card -->
+            <div class="card card-outline card-primary shadow-sm mb-4">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold">
+                        <i class="fas fa-share-alt text-primary mr-1"></i> Соціальні мережі
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="insta"><i class="fab fa-instagram text-danger mr-1"></i> Instagram URL</label>
+                        <input type="url" class="form-control" id="insta" name="insta" 
+                               value="{{ settings.get('insta', '') }}" placeholder="https://instagram.com/...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tg"><i class="fab fa-telegram text-info mr-1"></i> Telegram URL</label>
+                        <input type="url" class="form-control" id="tg" name="tg" 
+                               value="{{ settings.get('tg', '') }}" placeholder="https://t.me/...">
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label for="fb"><i class="fab fa-facebook text-primary mr-1"></i> Facebook URL</label>
+                        <input type="url" class="form-control" id="fb" name="fb" 
+                               value="{{ settings.get('fb', '') }}" placeholder="https://facebook.com/...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <button type="submit" class="btn btn-success btn-lg font-weight-bold shadow-sm">
+                        <i class="fas fa-save mr-1"></i> Зберегти всі налаштування
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Security & Password change card -->
+    <div class="col-lg-4">
+        <div class="card card-outline card-danger shadow-sm mb-4">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-key text-danger mr-1"></i> Зміна пароля адміністратора
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('admin_change_password') }}">
+                    <div class="form-group">
+                        <label for="current_password">Поточний пароль</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_password">Новий пароль</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" minlength="4" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Повторіть новий пароль</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="4" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-danger btn-block font-weight-bold">
+                        <i class="fas fa-lock mr-1"></i> Оновити пароль
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card card-outline card-secondary shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-lightbulb text-warning mr-1"></i> Підказка
+                </h3>
+            </div>
+            <div class="card-body text-sm text-muted">
+                Всі внесені налаштування миттєво зберігаються у базі даних SQLite3 і застосовуються на сайті магазину.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

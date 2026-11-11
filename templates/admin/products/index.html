@@ -1,0 +1,193 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Список товарів{% endblock %}
+{% block page_title %}Керування товарами{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('admin_products') }}">Товари</a></li>
+    <li class="breadcrumb-item active">Список</li>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3 align-items-center">
+    <div class="col-md-6 mb-2 mb-md-0">
+        <a href="{{ url_for('admin_product_create') }}" class="btn btn-success font-weight-bold shadow-sm">
+            <i class="fas fa-plus-circle mr-1"></i> Додати новий товар
+        </a>
+    </div>
+    <div class="col-md-6">
+        <!-- Search & Filter Bar -->
+        <form method="get" action="{{ url_for('admin_products') }}" class="form-inline justify-content-md-end">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Пошук за назвою..." value="{{ request.args.get('q', '') }}">
+                <select name="category" class="custom-select" onchange="this.form.submit()">
+                    <option value="">Всі категорії</option>
+                    <option value="small" {% if request.args.get('category') == 'small' %}selected{% endif %}>Маленькі</option>
+                    <option value="medium" {% if request.args.get('category') == 'medium' %}selected{% endif %}>Середні</option>
+                    <option value="large" {% if request.args.get('category') == 'large' %}selected{% endif %}>Великі</option>
+                    <option value="set" {% if request.args.get('category') == 'set' %}selected{% endif %}>Набори</option>
+                </select>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    {% if request.args.get('q') or request.args.get('category') %}
+                        <a href="{{ url_for('admin_products') }}" class="btn btn-outline-secondary" title="Скинути фільтр">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card card-outline card-primary shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center py-2">
+        <h3 class="card-title font-weight-bold">
+            <i class="fas fa-boxes-stacked mr-1"></i> Знайдено товарів: <span class="badge badge-primary">{{ products|length }}</span>
+        </h3>
+    </div>
+
+    <div class="card-body p-0 table-responsive">
+        <table class="table table-hover table-striped align-middle mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th style="width: 50px;" class="text-center">ID</th>
+                    <th style="width: 70px;" class="text-center">Фото</th>
+                    <th>Назва та розмір</th>
+                    <th>Категорія</th>
+                    <th>Бейдж</th>
+                    <th>Ціна</th>
+                    <th class="text-center">Статус</th>
+                    <th class="text-right" style="width: 170px;">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td class="text-center text-muted font-weight-bold">#{{ p.id }}</td>
+                    <td class="text-center">
+                        {% if p.image %}
+                            <img src="{{ p.image }}" alt="{{ p.name }}" class="product-img-thumb" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<span class=\'product-img-thumb\'>{{ p.emoji or '🪴' }}</span>';">
+                        {% else %}
+                            <span class="product-img-thumb">{{ p.emoji or '🪴' }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="font-weight-bold text-dark">{{ p.name }}</div>
+                        <div class="text-muted text-xs">
+                            <i class="fas fa-ruler-combined mr-1"></i>{{ p.size or 'Не вказано' }}
+                        </div>
+                    </td>
+                    <td>
+                        {% if p.category == 'small' %}
+                            <span class="badge badge-info">Маленькі</span>
+                        {% elif p.category == 'medium' %}
+                            <span class="badge badge-primary">Середні</span>
+                        {% elif p.category == 'large' %}
+                            <span class="badge badge-warning">Великі</span>
+                        {% elif p.category == 'set' %}
+                            <span class="badge" style="background-color: #6f42c1; color: white;">Набори</span>
+                        {% else %}
+                            <span class="badge badge-secondary">{{ p.category }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if p.badge == 'new' %}
+                            <span class="badge badge-success">Новинка</span>
+                        {% elif p.badge == 'sale' %}
+                            <span class="badge badge-danger">Знижка</span>
+                        {% elif p.badge == 'hit' %}
+                            <span class="badge badge-warning">Хіт</span>
+                        {% else %}
+                            <span class="text-muted text-xs">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="font-weight-bold text-success">{{ p.price }} грн</div>
+                        {% if p.old_price and p.old_price > p.price %}
+                            <small class="text-muted text-decoration-line-through" style="text-decoration: line-through;">
+                                {{ p.old_price }} грн
+                            </small>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <form action="{{ url_for('admin_product_toggle_status', id=p.id) }}" method="post" class="d-inline">
+                            {% if p.is_active %}
+                                <button type="submit" class="btn btn-xs btn-success" title="Натисніть щоб приховати">
+                                    <i class="fas fa-check-circle mr-1"></i> Активний
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-xs btn-secondary" title="Натисніть щоб активувати">
+                                    <i class="fas fa-eye-slash mr-1"></i> Прихований
+                                </button>
+                            {% endif %}
+                        </form>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('admin_product_edit', id=p.id) }}" class="btn btn-info" title="Редагувати">
+                                <i class="fas fa-pencil-alt"></i> Редагувати
+                            </a>
+                            <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ p.id }}', '{{ p.name|escape }}')" title="Видалити">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
+                        <h5>Товарів не знайдено</h5>
+                        <p class="text-sm">Спробуйте змінити критерії пошуку або додайте новий товар.</p>
+                        <a href="{{ url_for('admin_product_create') }}" class="btn btn-sm btn-success mt-2">
+                            <i class="fas fa-plus mr-1"></i> Додати товар
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title font-weight-bold">
+                    <i class="fas fa-exclamation-triangle mr-2"></i> Підтвердження видалення
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Ви дійсно бажаєте видалити товар <strong id="deleteProductName"></strong>?
+                <p class="text-danger text-sm mt-2 mb-0">Цю дію неможливо буде скасувати!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Скасувати</button>
+                <form id="deleteForm" method="post" action="">
+                    <button type="submit" class="btn btn-danger font-weight-bold">
+                        <i class="fas fa-trash-alt mr-1"></i> Так, видалити
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete(productId, productName) {
+    document.getElementById('deleteProductName').innerText = productName;
+    document.getElementById('deleteForm').action = '/admin/products/' + productId + '/delete';
+    $('#deleteModal').modal('show');
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Вхід в панель керування | ПоліКашпо Admin</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition login-page bg-light">
+<div class="login-box">
+    <!-- /.login-logo -->
+    <div class="card card-outline card-success shadow">
+        <div class="card-header text-center py-3">
+            <a href="/" class="h1 font-weight-bold text-dark text-decoration-none">
+                <span class="mr-1">🪴</span><b>ПоліКашпо</b><span class="text-success text-sm font-weight-normal ml-1">Admin</span>
+            </a>
+        </div>
+        <div class="card-body">
+            <p class="login-box-msg text-muted">Введіть дані для входу в адмін-панель</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('admin_login') }}" method="post">
+                <div class="input-group mb-3">
+                    <input type="text" name="username" class="form-control" placeholder="Логін" required autofocus value="{{ request.form.get('username', '') }}">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-user"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Пароль" required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row align-items-center mb-3">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success btn-block font-weight-bold">
+                            <i class="fas fa-sign-in-alt mr-1"></i> Увійти
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="alert alert-info py-2 px-3 mb-0 text-sm">
+                <i class="fas fa-info-circle mr-1"></i> <b>Стандартний доступ:</b><br>
+                Логін: <code>admin</code><br>
+                Пароль: <code>admin123</code>
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="{{ url_for('shop_index') }}" class="text-muted text-sm">
+                    <i class="fas fa-arrow-left mr-1"></i> Повернутися до магазину
+                </a>
+            </div>
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,84 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Повідомлення з форми сайту{% endblock %}
+{% block page_title %}Вхідні повідомлення (index.html){% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Повідомлення</li>
+{% endblock %}
+
+{% block content %}
+<div class="card card-outline card-info shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title font-weight-bold">
+            <i class="fas fa-envelope mr-1 text-info"></i> Повідомлення з форми «Напишіть нам»
+        </h3>
+    </div>
+
+    <div class="card-body p-0 table-responsive">
+        <table class="table table-hover table-striped align-middle mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th style="width: 50px;">ID</th>
+                    <th style="width: 180px;">Ім'я</th>
+                    <th style="width: 160px;">Телефон</th>
+                    <th>Текст повідомлення</th>
+                    <th style="width: 140px;">Дата</th>
+                    <th style="width: 120px;" class="text-center">Статус</th>
+                    <th class="text-right" style="width: 120px;">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in messages %}
+                <tr class="{% if not m.is_read %}font-weight-bold bg-light{% endif %}">
+                    <td>#{{ m.id }}</td>
+                    <td>
+                        <i class="fas fa-user text-muted mr-1"></i> {{ m.name }}
+                    </td>
+                    <td>
+                        <a href="tel:{{ m.phone }}" class="text-success font-weight-bold">
+                            <i class="fas fa-phone mr-1"></i> {{ m.phone }}
+                        </a>
+                    </td>
+                    <td class="text-dark">{{ m.message }}</td>
+                    <td class="text-muted text-sm">{{ m.created_at }}</td>
+                    <td class="text-center">
+                        {% if m.is_read %}
+                            <span class="badge badge-secondary">Прочитано</span>
+                        {% else %}
+                            <span class="badge badge-danger">Нове</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-right">
+                        <form action="{{ url_for('admin_message_toggle_read', id=m.id) }}" method="post" class="d-inline">
+                            {% if m.is_read %}
+                                <button type="submit" class="btn btn-xs btn-outline-secondary" title="Позначити як нове">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-xs btn-success" title="Позначити як прочитане">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            {% endif %}
+                        </form>
+                        <form action="{{ url_for('admin_message_delete', id=m.id) }}" method="post" onsubmit="return confirm('Видалити повідомлення?');" class="d-inline">
+                            <button type="submit" class="btn btn-xs btn-danger" title="Видалити">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3 text-secondary"></i>
+                        <h5>Повідомлень поки немає</h5>
+                        <p class="text-sm">Коли відвідувачі заповнять форму зв'язку на сайті, повідомлення з'являться тут.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

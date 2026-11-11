@@ -1,0 +1,155 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Замовлення з сайту{% endblock %}
+{% block page_title %}Замовлення з кошика (index.html){% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Замовлення</li>
+{% endblock %}
+
+{% block content %}
+<div class="card card-outline card-primary shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center py-2">
+        <h3 class="card-title font-weight-bold">
+            <i class="fas fa-shopping-bag mr-1 text-primary"></i> Список замовлень
+        </h3>
+        <div class="card-tools ml-auto">
+            <span class="badge badge-primary">Всього: {{ orders|length }}</span>
+        </div>
+    </div>
+
+    <div class="card-body p-0 table-responsive">
+        <table class="table table-hover table-striped align-middle mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th style="width: 60px;">№</th>
+                    <th>Клієнт</th>
+                    <th>Телефон</th>
+                    <th>Місто / Нова Пошта</th>
+                    <th>Товари у замовленні</th>
+                    <th>Сума</th>
+                    <th>Дата</th>
+                    <th class="text-center" style="width: 140px;">Статус</th>
+                    <th class="text-right" style="width: 180px;">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in orders %}
+                <tr>
+                    <td class="font-weight-bold">#{{ o.id }}</td>
+                    <td>
+                        <strong>{{ o.customer_name or 'Гість' }}</strong>
+                    </td>
+                    <td>
+                        <a href="tel:{{ o.phone }}" class="text-success font-weight-bold">
+                            <i class="fas fa-phone-alt text-xs mr-1"></i>{{ o.phone }}
+                        </a>
+                    </td>
+                    <td>
+                        <div class="font-weight-bold">{{ o.city or '—' }}</div>
+                        <small class="text-muted"><i class="fas fa-truck text-xs mr-1"></i>{{ o.warehouse or '' }}</small>
+                    </td>
+                    <td>
+                        <div class="text-sm text-dark">{{ o.items_json or '—' }}</div>
+                    </td>
+                    <td>
+                        <strong class="text-success font-weight-bold" style="font-size: 1.05rem;">{{ o.total_price }} грн</strong>
+                        <div class="text-muted text-xs">{{ o.payment_method or 'Накладений платіж' }}</div>
+                    </td>
+                    <td class="text-muted text-xs">{{ o.created_at }}</td>
+                    <td class="text-center">
+                        <form action="{{ url_for('admin_order_status', id=o.id) }}" method="post" class="d-inline">
+                            <select name="status" class="custom-select custom-select-sm" onchange="this.form.submit()" style="width: auto;">
+                                <option value="new" {% if o.status == 'new' %}selected{% endif %}>🟡 Нове</option>
+                                <option value="processing" {% if o.status == 'processing' %}selected{% endif %}>🔵 В обробці</option>
+                                <option value="completed" {% if o.status == 'completed' %}selected{% endif %}>🟢 Виконано</option>
+                                <option value="cancelled" {% if o.status == 'cancelled' %}selected{% endif %}>🔴 Скасовано</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-info" onclick="viewOrderDetails('{{ o.id }}', '{{ o.customer_name|escape }}', '{{ o.phone|escape }}', '{{ o.city|escape }}', '{{ o.warehouse|escape }}', '{{ o.items_json|escape }}', '{{ o.total_price }}', '{{ o.created_at }}')" title="Накладна">
+                                <i class="fas fa-print"></i>
+                            </button>
+                            <form action="{{ url_for('admin_order_delete', id=o.id) }}" method="post" onsubmit="return confirm('Видалити це замовлення?');" class="d-inline">
+                                <button type="submit" class="btn btn-danger" title="Видалити">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-muted">
+                        <i class="fas fa-shopping-cart fa-3x mb-3 text-secondary"></i>
+                        <h5>Замовлень ще немає</h5>
+                        <p class="text-sm">Коли клієнти оформлять замовлення в кошику на index.html, вони відразу відобразяться тут.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Order Invoice / Details Modal -->
+<div class="modal fade" id="orderModalDetails" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white py-2">
+                <h5 class="modal-title font-weight-bold">
+                    <i class="fas fa-receipt mr-1"></i> Товарний чек / Замовлення #<span id="modalOrderId"></span>
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4" id="printableArea">
+                <div class="text-center mb-3">
+                    <h4 class="font-weight-bold mb-0">🪴 ПоліКашпо</h4>
+                    <small class="text-muted">Виробництво та продаж кашпо з поліротангу</small>
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Клієнт:</strong> <span id="modalCustomer"></span></p>
+                    <p class="mb-1"><strong>Телефон:</strong> <span id="modalPhone"></span></p>
+                    <p class="mb-1"><strong>Місто:</strong> <span id="modalCity"></span></p>
+                    <p class="mb-1"><strong>Доставка:</strong> <span id="modalWarehouse"></span></p>
+                    <p class="mb-1"><strong>Дата замовлення:</strong> <span id="modalDate"></span></p>
+                </div>
+                <div class="card p-2 bg-light mb-3">
+                    <strong>Замовлені товари:</strong>
+                    <div id="modalItems" class="mt-1"></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 font-weight-bold">Разом до сплати:</h5>
+                    <h4 class="mb-0 text-success font-weight-bold"><span id="modalTotal"></span> грн</h4>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрити</button>
+                <button type="button" class="btn btn-success" onclick="window.print()">
+                    <i class="fas fa-print mr-1"></i> Друкувати
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function viewOrderDetails(id, customer, phone, city, warehouse, items, total, date) {
+    document.getElementById('modalOrderId').innerText = id;
+    document.getElementById('modalCustomer').innerText = customer;
+    document.getElementById('modalPhone').innerText = phone;
+    document.getElementById('modalCity').innerText = city;
+    document.getElementById('modalWarehouse').innerText = warehouse;
+    document.getElementById('modalItems').innerText = items;
+    document.getElementById('modalTotal').innerText = total;
+    document.getElementById('modalDate').innerText = date;
+    $('#orderModalDetails').modal('show');
+}
+</script>
+{% endblock %}

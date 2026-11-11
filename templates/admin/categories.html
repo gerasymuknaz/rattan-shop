@@ -1,0 +1,94 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Категорії товарів{% endblock %}
+{% block page_title %}Категорії каталогу (index.html){% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('admin_products') }}">Товари</a></li>
+    <li class="breadcrumb-item active">Категорії</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Categories List -->
+    <div class="col-lg-8">
+        <div class="card card-outline card-primary shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-tags text-primary mr-1"></i> Список категорій
+                </h3>
+            </div>
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 50px;">Порядок</th>
+                            <th>Код (slug для фільтра)</th>
+                            <th>Назва на сайті</th>
+                            <th class="text-center">Товарів</th>
+                            <th class="text-right" style="width: 100px;">Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cat in categories %}
+                        <tr>
+                            <td class="text-center font-weight-bold">{{ cat.sort_order }}</td>
+                            <td><code>{{ cat.slug }}</code></td>
+                            <td><strong>{{ cat.name }}</strong></td>
+                            <td class="text-center">
+                                <span class="badge badge-info">{{ cat.products_count }}</span>
+                            </td>
+                            <td class="text-right">
+                                {% if cat.slug not in ['small', 'medium', 'large', 'set'] %}
+                                <form action="{{ url_for('admin_category_delete', id=cat.id) }}" method="post" onsubmit="return confirm('Видалити цю категорію?');" class="d-inline">
+                                    <button type="submit" class="btn btn-xs btn-danger" title="Видалити">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="text-muted text-xs">Базова</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Form -->
+    <div class="col-lg-4">
+        <div class="card card-outline card-success shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-plus-circle text-success mr-1"></i> Додати категорію
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('admin_categories') }}">
+                    <div class="form-group">
+                        <label for="name" class="font-weight-bold">Назва категорії</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="наприклад: Підвісні кашпо" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slug" class="font-weight-bold">Системний код (slug)</label>
+                        <input type="text" class="form-control" id="slug" name="slug" placeholder="hanging" required>
+                        <small class="form-text text-muted">Лише латинські літери (використовується для кнопок фільтра)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sort_order">Порядок сортування</label>
+                        <input type="number" class="form-control" id="sort_order" name="sort_order" value="5">
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-block font-weight-bold shadow-sm">
+                        <i class="fas fa-save mr-1"></i> Створити категорію
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

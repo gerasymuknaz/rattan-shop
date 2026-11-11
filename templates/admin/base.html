@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Панель керування{% endblock %} | ПоліКашпо Admin</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Theme style (AdminLTE 3.2) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <!-- Custom Admin Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    {% block styles %}{% endblock %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light border-bottom-0 shadow-sm">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="{{ url_for('admin_dashboard') }}" class="nav-link">Головна</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="{{ url_for('admin_products') }}" class="nav-link">Товари</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="{{ url_for('admin_orders') }}" class="nav-link">Замовлення</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="{{ url_for('admin_settings') }}" class="nav-link">Налаштування</a>
+            </li>
+        </ul>
+
+        <!-- Right navbar links -->
+        <ul class="navbar-nav ml-auto align-items-center">
+            <li class="nav-item mr-2">
+                <a href="{{ url_for('shop_index') }}" target="_blank" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-external-link-alt mr-1"></i> Відкрити сайт (index.html)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('admin_logout') }}" class="btn btn-sm btn-outline-danger" title="Вийти">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Вихід
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <!-- Brand Logo -->
+        <a href="{{ url_for('admin_dashboard') }}" class="brand-link">
+            <span class="brand-image img-circle elevation-2 d-inline-flex justify-content-center align-items-center bg-success text-white" style="width: 33px; height: 33px; font-size: 16px;">
+                🪴
+            </span>
+            <span class="brand-text font-weight-bold ml-2">ПоліКашпо</span>
+            <small class="badge badge-info ml-1">Admin</small>
+        </a>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar user panel -->
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
+                <div class="image text-center pl-1">
+                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                        <i class="fas fa-user-shield text-light"></i>
+                    </div>
+                </div>
+                <div class="info">
+                    <a href="#" class="d-block font-weight-bold">{{ session.get('admin_user', 'Адміністратор') }}</a>
+                    <span class="text-xs text-success"><i class="fas fa-circle text-xs mr-1"></i>Онлайн</span>
+                </div>
+            </div>
+
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Огляд сайту</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-header text-uppercase font-weight-bold text-muted">Каталог товарів</li>
+
+                    <li class="nav-item {% if active_page in ['products', 'product_add', 'product_edit', 'categories'] %}menu-open{% endif %}">
+                        <a href="#" class="nav-link {% if active_page in ['products', 'product_add', 'product_edit', 'categories'] %}active{% endif %}">
+                            <i class="nav-icon fas fa-boxes-stacked"></i>
+                            <p>
+                                Товари (Картки)
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ url_for('admin_products') }}" class="nav-link {% if active_page == 'products' %}active{% endif %}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Всі картки товарів</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url_for('admin_product_create') }}" class="nav-link {% if active_page == 'product_add' %}active{% endif %}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>+ Додати товар</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url_for('admin_categories') }}" class="nav-link {% if active_page == 'categories' %}active{% endif %}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Категорії каталогу</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-header text-uppercase font-weight-bold text-muted">Замовлення та зв'язок</li>
+
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin_orders') }}" class="nav-link {% if active_page == 'orders' %}active{% endif %}">
+                            <i class="nav-icon fas fa-shopping-cart"></i>
+                            <p>
+                                Замовлення
+                                {% if new_orders_count and new_orders_count > 0 %}
+                                    <span class="badge badge-warning right">{{ new_orders_count }}</span>
+                                {% endif %}
+                            </p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin_messages') }}" class="nav-link {% if active_page == 'messages' %}active{% endif %}">
+                            <i class="nav-icon fas fa-envelope"></i>
+                            <p>
+                                Повідомлення
+                                {% if unread_messages_count and unread_messages_count > 0 %}
+                                    <span class="badge badge-danger right">{{ unread_messages_count }}</span>
+                                {% endif %}
+                            </p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin_reviews') }}" class="nav-link {% if active_page == 'reviews' %}active{% endif %}">
+                            <i class="nav-icon fas fa-star"></i>
+                            <p>Відгуки покупців</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-header text-uppercase font-weight-bold text-muted">Сайт index.html</li>
+
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin_settings') }}" class="nav-link {% if active_page == 'settings' %}active{% endif %}">
+                            <i class="nav-icon fas fa-sliders"></i>
+                            <p>Налаштування сайту</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item mt-3">
+                        <a href="{{ url_for('shop_index') }}" target="_blank" class="nav-link text-info">
+                            <i class="nav-icon fas fa-arrow-up-right-from-square"></i>
+                            <p>Перейти на сайт</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin_logout') }}" class="nav-link text-danger">
+                            <i class="nav-icon fas fa-power-off"></i>
+                            <p>Вийти</p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- /.sidebar-menu -->
+        </div>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header pb-2">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0 font-weight-bold">{% block page_title %}Панель керування{% endblock %}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Головна</a></li>
+                            {% block breadcrumb %}{% endblock %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.content-header -->
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show shadow-sm" role="alert">
+                                {% if category == 'success' %}
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                {% elif category == 'danger' or category == 'error' %}
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                {% endif %}
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Footer -->
+    <footer class="main-footer text-sm">
+        <div class="float-right d-none d-sm-inline">
+            Керування <b>index.html</b> через Flask + SQLite3
+        </div>
+        <strong>&copy; 2026 <a href="{{ url_for('shop_index') }}" target="_blank">ПоліКашпо</a>.</strong> Всі права захищені.
+    </footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- Custom admin JS -->
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

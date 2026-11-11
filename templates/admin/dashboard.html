@@ -1,0 +1,276 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Огляд магазину (index.html){% endblock %}
+{% block page_title %}Панель керування магазином{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Огляд</li>
+{% endblock %}
+
+{% block content %}
+<!-- Small boxes (Stat boxes) -->
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-info shadow-sm">
+            <div class="inner">
+                <h3>{{ stats.total_products }}</h3>
+                <p>Товарів у каталозі</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-boxes-stacked"></i>
+            </div>
+            <a href="{{ url_for('admin_products') }}" class="small-box-footer">
+                Керувати товарами <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-success shadow-sm">
+            <div class="inner">
+                <h3>{{ stats.total_orders }}</h3>
+                <p>Замовлень клієнтів</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <a href="{{ url_for('admin_orders') }}" class="small-box-footer">
+                Переглянути замовлення <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger shadow-sm">
+            <div class="inner">
+                <h3>{{ stats.total_messages }}</h3>
+                <p>Повідомлень з сайту</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <a href="{{ url_for('admin_messages') }}" class="small-box-footer">
+                Вхідні повідомлення <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning shadow-sm">
+            <div class="inner">
+                <h3>{{ stats.total_reviews }}</h3>
+                <p>Відгуків на index.html</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <a href="{{ url_for('admin_reviews') }}" class="small-box-footer">
+                Керувати відгуками <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card card-outline card-success shadow-sm mb-4">
+    <div class="card-header py-2">
+        <h3 class="card-title font-weight-bold">
+            <i class="fas fa-bolt text-warning mr-1"></i> Швидкі дії
+        </h3>
+    </div>
+    <div class="card-body py-3">
+        <div class="row">
+            <div class="col-md-3 mb-2">
+                <a href="{{ url_for('admin_product_create') }}" class="btn btn-success btn-block">
+                    <i class="fas fa-plus-circle mr-1"></i> Додати товар
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="{{ url_for('admin_settings') }}" class="btn btn-secondary btn-block">
+                    <i class="fas fa-sliders-h mr-1"></i> Налаштування сайту
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="{{ url_for('admin_reviews') }}" class="btn btn-warning btn-block text-dark font-weight-bold">
+                    <i class="fas fa-star mr-1"></i> Додати відгук
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="{{ url_for('shop_index') }}" target="_blank" class="btn btn-outline-primary btn-block">
+                    <i class="fas fa-external-link-alt mr-1"></i> Відкрити index.html
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Row: Orders & Messages -->
+<div class="row">
+    <!-- Left Column: Recent Orders -->
+    <div class="col-lg-7">
+        <div class="card card-outline card-primary shadow-sm mb-4">
+            <div class="card-header d-flex align-items-center justify-content-between py-2">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-shopping-bag mr-1 text-primary"></i> Останні замовлення з сайту
+                </h3>
+                <div class="card-tools ml-auto">
+                    <a href="{{ url_for('admin_orders') }}" class="btn btn-xs btn-tool text-primary">
+                        Всі замовлення <i class="fas fa-chevron-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-hover align-middle mb-0 text-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>№</th>
+                            <th>Клієнт</th>
+                            <th>Місто</th>
+                            <th>Сума</th>
+                            <th>Статус</th>
+                            <th class="text-right">Дія</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in recent_orders %}
+                        <tr>
+                            <td class="font-weight-bold">#{{ o.id }}</td>
+                            <td>
+                                <strong>{{ o.customer_name }}</strong>
+                                <div><a href="tel:{{ o.phone }}" class="text-muted text-xs">{{ o.phone }}</a></div>
+                            </td>
+                            <td>{{ o.city or '—' }}</td>
+                            <td><strong class="text-success">{{ o.total_price }} грн</strong></td>
+                            <td>
+                                {% if o.status == 'new' %}
+                                    <span class="badge badge-warning">Нове</span>
+                                {% elif o.status == 'processing' %}
+                                    <span class="badge badge-info">В обробці</span>
+                                {% elif o.status == 'completed' %}
+                                    <span class="badge badge-success">Виконано</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">{{ o.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                <a href="{{ url_for('admin_orders') }}" class="btn btn-xs btn-outline-primary" title="Деталі">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                Замовлень поки немає.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Catalog Products Card -->
+        <div class="card card-outline card-info shadow-sm">
+            <div class="card-header d-flex align-items-center justify-content-between py-2">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-boxes-stacked mr-1 text-info"></i> Товари в каталозі index.html
+                </h3>
+                <div class="card-tools ml-auto">
+                    <a href="{{ url_for('admin_products') }}" class="btn btn-xs btn-tool text-info">
+                        Всі товари <i class="fas fa-chevron-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-hover align-middle mb-0 text-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 50px;">Фото</th>
+                            <th>Назва</th>
+                            <th>Розмір</th>
+                            <th>Ціна</th>
+                            <th class="text-right">Редагувати</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in recent_products %}
+                        <tr>
+                            <td class="text-center">
+                                {% if product.image %}
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" class="product-img-thumb" style="width: 36px; height: 36px;">
+                                {% else %}
+                                    <span class="product-img-thumb" style="width: 36px; height: 36px; font-size: 18px;">{{ product.emoji or '🪴' }}</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ product.name }}</strong></td>
+                            <td class="text-muted">{{ product.size or '—' }}</td>
+                            <td><strong class="text-success">{{ product.price }} грн</strong></td>
+                            <td class="text-right">
+                                <a href="{{ url_for('admin_product_edit', id=product.id) }}" class="btn btn-xs btn-primary">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Recent Messages & Store Info -->
+    <div class="col-lg-5">
+        <!-- Messages Card -->
+        <div class="card card-outline card-danger shadow-sm mb-4">
+            <div class="card-header d-flex align-items-center justify-content-between py-2">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-envelope mr-1 text-danger"></i> Повідомлення з «Напишіть нам»
+                </h3>
+                <div class="card-tools ml-auto">
+                    <a href="{{ url_for('admin_messages') }}" class="btn btn-xs btn-tool text-danger">
+                        Всі повідомлення <i class="fas fa-chevron-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush text-sm">
+                    {% for m in recent_messages %}
+                    <li class="list-group-item {% if not m.is_read %}bg-light font-weight-bold{% endif %} py-2">
+                        <div class="d-flex justify-content-between">
+                            <span><i class="fas fa-user text-muted mr-1"></i> {{ m.name }}</span>
+                            <small class="text-muted">{{ m.created_at }}</small>
+                        </div>
+                        <div class="text-muted text-xs"><i class="fas fa-phone mr-1"></i> {{ m.phone }}</div>
+                        <p class="mb-0 text-dark mt-1 text-truncate" style="max-width: 100%;">{{ m.message }}</p>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-center py-4 text-muted">
+                        Повідомлень поки немає.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Store Contacts Box -->
+        <div class="card card-outline card-secondary shadow-sm">
+            <div class="card-header py-2">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-store mr-1"></i> Поточні дані index.html
+                </h3>
+            </div>
+            <div class="card-body text-sm py-3">
+                <p class="mb-2"><strong>Магазин:</strong> {{ settings.get('site_name', 'ПоліКашпо') }}</p>
+                <p class="mb-2"><strong>Телефон:</strong> {{ settings.get('phone', '—') }}</p>
+                <p class="mb-2"><strong>Email:</strong> {{ settings.get('email', '—') }}</p>
+                <p class="mb-2"><strong>Адреса:</strong> {{ settings.get('address', '—') }}</p>
+                <p class="mb-2"><strong>Промокод:</strong> <span class="badge badge-success">{{ settings.get('promo', 'ПОЛІ15') }}</span></p>
+                <hr class="my-2">
+                <a href="{{ url_for('admin_settings') }}" class="btn btn-outline-secondary btn-block btn-sm">
+                    <i class="fas fa-sliders-h mr-1"></i> Змінити налаштування сайту
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

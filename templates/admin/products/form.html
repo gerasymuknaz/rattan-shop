@@ -1,0 +1,232 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}{{ 'Редагувати товар' if product else 'Додати новий товар' }}{% endblock %}
+{% block page_title %}{{ 'Редагування товару' if product else 'Створення товару' }}{% endblock %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ url_for('admin_products') }}">Товари</a></li>
+    <li class="breadcrumb-item active">{{ 'Редагування' if product else 'Новий товар' }}</li>
+{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" action="{{ url_for('admin_product_edit', id=product.id) if product else url_for('admin_product_create') }}">
+    <div class="row">
+        <!-- Main Product Information -->
+        <div class="col-lg-8">
+            <div class="card card-outline card-success shadow-sm">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold">
+                        <i class="fas fa-info-circle text-success mr-1"></i> Основна інформація
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="name" class="font-weight-bold">Назва товару <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-lg" id="name" name="name" 
+                               value="{{ product.name if product else '' }}" 
+                               placeholder="наприклад: Кашпо «Класика»" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="size">Розміри / Характеристики</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-ruler-combined"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="size" name="size" 
+                                           value="{{ product.size if product else '' }}" 
+                                           placeholder="наприклад: Ø 22 см, h 20 см">
+                                </div>
+                                <small class="form-text text-muted">Вкажіть діаметр, висоту або комплектацію</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="emoji">Емоджі-іконка (запасна)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">🌿</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="emoji" name="emoji" 
+                                           value="{{ product.emoji if product else '🪴' }}" 
+                                           placeholder="🪴" maxlength="4">
+                                </div>
+                                <small class="form-text text-muted">Відображається, якщо немає фото</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Детальний опис товару</label>
+                        <textarea class="form-control" id="description" name="description" rows="5" 
+                                  placeholder="Опишіть особливості плетіння, каркасу, матеріалу або догляду...">{{ product.description if product else '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price & Discounts Card -->
+            <div class="card card-outline card-primary shadow-sm">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold">
+                        <i class="fas fa-tag text-primary mr-1"></i> Вартість та ціноутворення
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="price" class="font-weight-bold">Поточна ціна (грн) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" step="1" min="0" class="form-control font-weight-bold" id="price" name="price" 
+                                           value="{{ product.price if product else '0' }}" required>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text font-weight-bold">грн</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="old_price">Стара ціна (грн, для знижки)</label>
+                                <div class="input-group">
+                                    <input type="number" step="1" min="0" class="form-control" id="old_price" name="old_price" 
+                                           value="{{ product.old_price if product and product.old_price else '0' }}">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">грн</span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">Вкажіть 0, якщо знижки немає</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar / Media & Category Settings -->
+        <div class="col-lg-4">
+            <!-- Image Card -->
+            <div class="card card-outline card-info shadow-sm mb-4">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold">
+                        <i class="fas fa-image text-info mr-1"></i> Зображення товару
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="image-preview-container d-flex justify-content-center mb-3">
+                        <div class="image-preview-box">
+                            {% if product and product.image %}
+                                <img id="imagePreview" src="{{ product.image }}" alt="Прев'ю товару" data-initial-src="{{ product.image }}">
+                                <span id="placeholderIcon" class="placeholder-icon" style="display: none;"><i class="fas fa-image"></i></span>
+                            {% else %}
+                                <img id="imagePreview" src="" alt="Прев'ю товару" style="display: none;" data-initial-src="">
+                                <span id="placeholderIcon" class="placeholder-icon"><i class="fas fa-image"></i></span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- File Upload Input -->
+                    <div class="form-group text-left">
+                        <label for="imageFile"><i class="fas fa-upload mr-1"></i> Завантажити фото з файлу</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="imageFile" name="image_file" accept="image/*">
+                            <label class="custom-file-label" for="imageFile">Оберіть файл...</label>
+                        </div>
+                        <small class="form-text text-muted">Підтримуються JPG, PNG, WEBP</small>
+                    </div>
+
+                    <div class="text-muted font-weight-bold my-2 text-center">— АБО —</div>
+
+                    <!-- Direct URL Input -->
+                    <div class="form-group text-left">
+                        <label for="imageUrl"><i class="fas fa-link mr-1"></i> Посилання на фото (URL)</label>
+                        <input type="text" class="form-control" id="imageUrl" name="image_url" 
+                               value="{{ product.image if product and product.image and not product.image.startswith('/static/uploads/') else '' }}" 
+                               placeholder="https://example.com/photo.jpg">
+                        <small class="form-text text-muted">Можна вставити пряме посилання на фото</small>
+                    </div>
+
+                    {% if product and product.image %}
+                    <div class="form-check text-left mt-2">
+                        <input class="form-check-input" type="checkbox" id="removeImage" name="remove_image" value="1">
+                        <label class="form-check-label text-danger font-weight-bold" for="removeImage">
+                            <i class="fas fa-trash-alt mr-1"></i> Видалити поточне фото
+                        </label>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Classification & Status Card -->
+            <div class="card card-outline card-secondary shadow-sm mb-4">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold">
+                        <i class="fas fa-filter mr-1"></i> Категорія та бейдж
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="category" class="font-weight-bold">Категорія</label>
+                        <select class="custom-select" id="category" name="category">
+                            {% for cat in categories %}
+                                <option value="{{ cat.slug }}" {% if product and product.category == cat.slug %}selected{% elif not product and cat.slug == 'medium' %}selected{% endif %}>{{ cat.name }}</option>
+                            {% else %}
+                                <option value="small" {% if product and product.category == 'small' %}selected{% endif %}>Маленькі кашпо</option>
+                                <option value="medium" {% if not product or product.category == 'medium' %}selected{% endif %}>Середні кашпо</option>
+                                <option value="large" {% if product and product.category == 'large' %}selected{% endif %}>Великі кашпо</option>
+                                <option value="set" {% if product and product.category == 'set' %}selected{% endif %}>Набори кашпо</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="badge">Маркетинговий бейдж</label>
+                        <select class="custom-select" id="badge" name="badge">
+                            <option value="" {% if not product or not product.badge %}selected{% endif %}>Немає бейджа</option>
+                            <option value="new" {% if product and product.badge == 'new' %}selected{% endif %}>🔥 Новинка (new)</option>
+                            <option value="sale" {% if product and product.badge == 'sale' %}selected{% endif %}>🏷 Знижка (sale)</option>
+                            <option value="hit" {% if product and product.badge == 'hit' %}selected{% endif %}>⭐ Хіт продажу (hit)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <div class="custom-control custom-switch custom-switch-lg mt-2">
+                            <input type="checkbox" class="custom-control-input" id="isActive" name="is_active" value="1" 
+                                   {% if not product or product.is_active %}checked{% endif %}>
+                            <label class="custom-control-label font-weight-bold" for="isActive">
+                                Показувати в магазині (Активний)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button Bar -->
+            <div class="card shadow-sm">
+                <div class="card-body p-3">
+                    <button type="submit" class="btn btn-success btn-block btn-lg font-weight-bold shadow-sm mb-2">
+                        <i class="fas fa-save mr-1"></i> {{ 'Зберегти зміни' if product else 'Створити товар' }}
+                    </button>
+                    <a href="{{ url_for('admin_products') }}" class="btn btn-outline-secondary btn-block">
+                        <i class="fas fa-times mr-1"></i> Скасувати
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Update custom file label when file selected
+$('#imageFile').on('change', function() {
+    var fileName = $(this).val().split('\\').pop();
+    $(this).next('.custom-file-label').addClass("selected").html(fileName || "Оберіть файл...");
+});
+</script>
+{% endblock %}
+

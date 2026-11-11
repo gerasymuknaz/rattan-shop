@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ПоліКашпо — Кашпо з поліротангу</title>
+    <title>{{ settings.get('site_name', 'ПоліКашпо') }} — Кашпо з поліротангу</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
@@ -15,7 +15,7 @@
     <div class="container header-inner">
         <a href="#" class="logo">
             <span class="logo-icon">🪴</span>
-            <span class="logo-text">ПоліКашпо</span>
+            <span class="logo-text">{{ settings.get('site_name', 'ПоліКашпо') }}</span>
         </a>
         <nav class="nav" id="mainNav">
             <a href="#catalog">Каталог</a>
@@ -41,8 +41,8 @@
     <div class="hero-bg"></div>
     <div class="container hero-content">
         <p class="hero-tag">Практичність • Стиль • Довговічність</p>
-        <h1 class="hero-title">Кашпо з поліротангу<br><span>красиво і практично</span></h1>
-        <p class="hero-desc">Стильні кашпо з штучного ротангу — виглядають як натуральні, але служать у рази довше. Не бояться дощу, сонця і морозу.</p>
+        <h1 class="hero-title">{{ settings.get('hero_title1', 'Кашпо з поліротангу') }}<br><span>{{ settings.get('hero_title2', 'красиво і практично') }}</span></h1>
+        <p class="hero-desc">{{ settings.get('hero_desc', 'Стильні кашпо з штучного ротангу — виглядають як натуральні, але служать у рази довше. Не бояться дощу, сонця і морозу.') }}</p>
         <div class="hero-actions">
             <a href="#catalog" class="btn btn-primary">Переглянути каталог</a>
             <a href="#about" class="btn btn-outline">Дізнатись більше</a>
@@ -107,7 +107,43 @@
             <button class="filter-btn" data-filter="large">Великі</button>
             <button class="filter-btn" data-filter="set">Набори</button>
         </div>
-        <div class="products-grid" id="productsGrid"></div>
+        
+        <!-- Products Grid rendered from SQLite Database -->
+        <div class="products-grid" id="productsGrid">
+            {% for p in products %}
+            <div class="product-card" data-category="{{ p.category }}">
+                <div class="product-image">
+                    {% if p.image %}
+                        <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="product-emoji" style="display:none;">{{ p.emoji or '🪴' }}</span>
+                    {% else %}
+                        <span class="product-emoji">{{ p.emoji or '🪴' }}</span>
+                    {% endif %}
+                    
+                    {% if p.badge == 'new' %}
+                        <span class="product-badge badge-new">Новинка</span>
+                    {% elif p.badge == 'sale' %}
+                        <span class="product-badge badge-sale">Знижка</span>
+                    {% elif p.badge == 'hit' %}
+                        <span class="product-badge badge-hit">Хіт</span>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ p.name }}</h3>
+                    <p class="product-size">{{ p.size or '' }}</p>
+                    <div class="product-bottom">
+                        <div class="product-price">
+                            <span class="price-current">{{ p.price }} грн</span>
+                            {% if p.old_price and p.old_price > p.price %}
+                                <span class="price-old">{{ p.old_price }} грн</span>
+                            {% endif %}
+                        </div>
+                        <button class="add-to-cart-btn" data-id="{{ p.id }}" title="Додати в кошик">+</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </section>
 
@@ -130,7 +166,7 @@
         </div>
         <div class="about-content">
             <p class="section-tag">Наша історія</p>
-            <h2 class="section-title">Про ПоліКашпо</h2>
+            <h2 class="section-title">Про {{ settings.get('site_name', 'ПоліКашпо') }}</h2>
             <p>Ми спеціалізуємось на виробництві та продажу кашпо зі штучного ротангу (поліротангу). Наші вироби поєднують естетику натурального плетіння з практичністю сучасних матеріалів.</p>
             <p>Поліротанг — це синтетичне волокно, яке імітує натуральний ротанг, але значно перевершує його за міцністю та довговічністю. Ідеально підходить як для дому, так і для вулиці.</p>
             <div class="about-highlights">
@@ -163,39 +199,21 @@
             <h2 class="section-title">Що кажуть наші покупці</h2>
         </div>
         <div class="reviews-grid">
+            {% for r in reviews %}
             <div class="review-card">
-                <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                <p class="review-text">"Стоять на терасі вже 2 роки — виглядають як нові! Ніякого вигоряння, ніякого пошкодження від дощу. Супер якість!"</p>
+                <div class="review-stars">
+                    {% for _ in range(r.stars) %}⭐{% endfor %}
+                </div>
+                <p class="review-text">"{{ r.text }}"</p>
                 <div class="review-author">
-                    <div class="review-avatar">ОК</div>
+                    <div class="review-avatar">{{ r.author_name[:2]|upper }}</div>
                     <div>
-                        <p class="review-name">Олена Коваленко</p>
-                        <p class="review-date">Жовтень 2026</p>
+                        <p class="review-name">{{ r.author_name }}</p>
+                        <p class="review-date">{{ r.date_str or r.city_info }}</p>
                     </div>
                 </div>
             </div>
-            <div class="review-card">
-                <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                <p class="review-text">"Думав що пластик буде виглядати дешево — помилявся! Виглядає як справжній ротанг, а за якістю навіть краще. Раджу!"</p>
-                <div class="review-author">
-                    <div class="review-avatar">АМ</div>
-                    <div>
-                        <p class="review-name">Андрій Мельник</p>
-                        <p class="review-date">Вересень 2026</p>
-                    </div>
-                </div>
-            </div>
-            <div class="review-card">
-                <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                <p class="review-text">"Купила набір з 5 кашпо для квітів у дворі. Пережили зиму без проблем! Мию просто шлангом — і вони чисті."</p>
-                <div class="review-author">
-                    <div class="review-avatar">МШ</div>
-                    <div>
-                        <p class="review-name">Марія Шевченко</p>
-                        <p class="review-date">Серпень 2026</p>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
@@ -204,7 +222,7 @@
 <section class="cta">
     <div class="container cta-inner">
         <h2>Знижка 15% на перше замовлення!</h2>
-        <p>Використовуйте промокод <strong>ПОЛІ15</strong> при оформленні</p>
+        <p>Використовуйте промокод <strong>{{ settings.get('promo', 'ПОЛІ15') }}</strong> при оформленні</p>
         <a href="#catalog" class="btn btn-primary btn-lg">Обрати кашпо</a>
     </div>
 </section>
@@ -221,35 +239,35 @@
                     <span class="contact-icon">📞</span>
                     <div>
                         <p class="contact-label">Телефон</p>
-                        <a href="tel:+380991234567" id="sitePhone">+380 99 123 45 67</a>
+                        <a href="tel:{{ settings.get('phone', '+380 99 123 45 67')|replace(' ', '') }}" id="sitePhone">{{ settings.get('phone', '+380 99 123 45 67') }}</a>
                     </div>
                 </div>
                 <div class="contact-item">
                     <span class="contact-icon">📧</span>
                     <div>
                         <p class="contact-label">Email</p>
-                        <a href="mailto:info@polikashpo.ua" id="siteEmail">info@polikashpo.ua</a>
+                        <a href="mailto:{{ settings.get('email', 'info@polikashpo.ua') }}" id="siteEmail">{{ settings.get('email', 'info@polikashpo.ua') }}</a>
                     </div>
                 </div>
                 <div class="contact-item">
                     <span class="contact-icon">📍</span>
                     <div>
                         <p class="contact-label">Адреса</p>
-                        <p id="siteAddress">м. Київ, вул. Хрещатик 10</p>
+                        <p id="siteAddress">{{ settings.get('address', 'м. Київ, вул. Хрещатик 10') }}</p>
                     </div>
                 </div>
                 <div class="contact-item">
                     <span class="contact-icon">🕐</span>
                     <div>
                         <p class="contact-label">Графік роботи</p>
-                        <p id="siteHours">Пн-Пт: 9:00-18:00, Сб: 10:00-15:00</p>
+                        <p id="siteHours">{{ settings.get('hours', 'Пн-Пт: 9:00-18:00, Сб: 10:00-15:00') }}</p>
                     </div>
                 </div>
             </div>
             <div class="social-links">
-                <a href="#" class="social-link" title="Instagram" id="socialInsta">📸</a>
-                <a href="#" class="social-link" title="Telegram" id="socialTg">✈️</a>
-                <a href="#" class="social-link" title="Facebook" id="socialFb">👥</a>
+                <a href="{{ settings.get('insta', '#') }}" target="_blank" class="social-link" title="Instagram" id="socialInsta">📸</a>
+                <a href="{{ settings.get('tg', '#') }}" target="_blank" class="social-link" title="Telegram" id="socialTg">✈️</a>
+                <a href="{{ settings.get('fb', '#') }}" target="_blank" class="social-link" title="Facebook" id="socialFb">👥</a>
             </div>
         </div>
         <div class="contact-form-wrap">
@@ -262,7 +280,7 @@
                     <input type="tel" placeholder="Телефон" required>
                 </div>
                 <div class="form-group">
-                    <input type="email" placeholder="Email">
+                    <input type="email" placeholder="Email (необов'язково)">
                 </div>
                 <div class="form-group">
                     <textarea rows="4" placeholder="Ваше повідомлення..." required></textarea>
@@ -279,7 +297,7 @@
         <div class="footer-brand">
             <a href="#" class="logo">
                 <span class="logo-icon">🪴</span>
-                <span class="logo-text">ПоліКашпо</span>
+                <span class="logo-text">{{ settings.get('site_name', 'ПоліКашпо') }}</span>
             </a>
             <p>Стильні кашпо з поліротангу для дому, балкону та двору.</p>
         </div>
@@ -300,8 +318,8 @@
     </div>
     <div class="footer-bottom">
         <div class="container footer-bottom-inner">
-            <p>© 2026 ПоліКашпо. Всі права захищені. 🇺🇦</p>
-            <button class="admin-login-link" id="adminLoginLink">🔒</button>
+            <p>© 2026 {{ settings.get('site_name', 'ПоліКашпо') }}. Всі права захищені. 🇺🇦</p>
+            <a href="/admin" class="admin-login-link" id="adminLoginLink" title="Вхід в адмін-панель (AdminLTE)">🔒</a>
         </div>
     </div>
 </footer>
@@ -354,170 +372,15 @@
     </div>
 </div>
 
-<!-- Admin Login Modal -->
-<div class="modal-overlay" id="adminLoginModal">
-    <div class="modal admin-login-modal">
-        <button class="modal-close" id="adminLoginClose">✕</button>
-        <h3>🔐 Вхід в адмін панель</h3>
-        <form id="adminLoginForm">
-            <div class="form-group">
-                <label>Логін</label>
-                <input type="text" id="adminUser" placeholder="Логін" required autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>Пароль</label>
-                <input type="password" id="adminPass" placeholder="Пароль" required autocomplete="off">
-            </div>
-            <p class="admin-error" id="adminError"></p>
-            <button type="submit" class="btn btn-primary btn-full">Увійти</button>
-        </form>
-    </div>
-</div>
-
-<!-- Admin Panel -->
-<div class="admin-panel" id="adminPanel">
-    <div class="admin-panel-inner">
-        <div class="admin-header">
-            <h2>⚙️ Адмін панель</h2>
-            <button class="btn btn-outline admin-logout" id="adminLogout">Вийти</button>
-        </div>
-
-        <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="contacts">📞 Контакти</button>
-            <button class="admin-tab" data-tab="products">🛍 Товари</button>
-            <button class="admin-tab" data-tab="hero">🏠 Головна</button>
-            <button class="admin-tab" data-tab="social">🔗 Соцмережі</button>
-        </div>
-
-        <!-- Contacts Tab -->
-        <div class="admin-tab-content active" id="tab-contacts">
-            <h3>Контактна інформація</h3>
-            <div class="admin-form-group">
-                <label>Телефон</label>
-                <input type="text" id="adminPhone" placeholder="+380 99 123 45 67">
-            </div>
-            <div class="admin-form-group">
-                <label>Email</label>
-                <input type="email" id="adminEmail" placeholder="info@polikashpo.ua">
-            </div>
-            <div class="admin-form-group">
-                <label>Адреса</label>
-                <input type="text" id="adminAddress" placeholder="м. Київ, вул. Хрещатик 10">
-            </div>
-            <div class="admin-form-group">
-                <label>Графік роботи</label>
-                <input type="text" id="adminHours" placeholder="Пн-Пт: 9:00-18:00, Сб: 10:00-15:00">
-            </div>
-            <button class="btn btn-primary" id="saveContacts">💾 Зберегти контакти</button>
-        </div>
-
-        <!-- Products Tab -->
-        <div class="admin-tab-content" id="tab-products">
-            <h3>Управління товарами</h3>
-            <p class="admin-hint">Натисніть на товар щоб редагувати</p>
-            <div class="admin-products-list" id="adminProductsList"></div>
-        </div>
-
-        <!-- Hero Tab -->
-        <div class="admin-tab-content" id="tab-hero">
-            <h3>Головна сторінка</h3>
-            <div class="admin-form-group">
-                <label>Заголовок (рядок 1)</label>
-                <input type="text" id="adminHeroTitle1" placeholder="Кашпо з поліротангу">
-            </div>
-            <div class="admin-form-group">
-                <label>Заголовок (рядок 2)</label>
-                <input type="text" id="adminHeroTitle2" placeholder="красиво і практично">
-            </div>
-            <div class="admin-form-group">
-                <label>Опис</label>
-                <textarea id="adminHeroDesc" rows="3" placeholder="Опис на головній..."></textarea>
-            </div>
-            <div class="admin-form-group">
-                <label>Промокод</label>
-                <input type="text" id="adminPromo" placeholder="ПОЛІ15">
-            </div>
-            <button class="btn btn-primary" id="saveHero">💾 Зберегти</button>
-        </div>
-
-        <!-- Social Tab -->
-        <div class="admin-tab-content" id="tab-social">
-            <h3>Соціальні мережі</h3>
-            <div class="admin-form-group">
-                <label>Instagram (посилання)</label>
-                <input type="url" id="adminInsta" placeholder="https://instagram.com/...">
-            </div>
-            <div class="admin-form-group">
-                <label>Telegram (посилання)</label>
-                <input type="url" id="adminTg" placeholder="https://t.me/...">
-            </div>
-            <div class="admin-form-group">
-                <label>Facebook (посилання)</label>
-                <input type="url" id="adminFb" placeholder="https://facebook.com/...">
-            </div>
-            <button class="btn btn-primary" id="saveSocial">💾 Зберегти</button>
-        </div>
-
-        <!-- Product Edit Modal inside admin -->
-        <div class="admin-product-edit" id="adminProductEdit" style="display:none;">
-            <div class="admin-product-edit-inner">
-                <h3>✏️ Редагування товару</h3>
-                <input type="hidden" id="editProductId">
-                <div class="admin-form-group">
-                    <label>Назва</label>
-                    <input type="text" id="editProductName">
-                </div>
-                <div class="admin-form-group">
-                    <label>Розмір</label>
-                    <input type="text" id="editProductSize">
-                </div>
-                <div class="admin-form-group">
-                    <label>Ціна (грн)</label>
-                    <input type="number" id="editProductPrice">
-                </div>
-                <div class="admin-form-group">
-                    <label>Стара ціна (грн, 0 = немає)</label>
-                    <input type="number" id="editProductOldPrice">
-                </div>
-                <div class="admin-form-group">
-                    <label>Фото (URL посилання)</label>
-                    <input type="url" id="editProductImage" placeholder="https://...">
-                    <small>Вставте посилання на фото товару</small>
-                </div>
-                <div class="admin-form-group">
-                    <label>Емоджі (якщо без фото)</label>
-                    <input type="text" id="editProductEmoji" maxlength="4">
-                </div>
-                <div class="admin-form-group">
-                    <label>Категорія</label>
-                    <select id="editProductCategory">
-                        <option value="small">Маленькі</option>
-                        <option value="medium">Середні</option>
-                        <option value="large">Великі</option>
-                        <option value="set">Набори</option>
-                    </select>
-                </div>
-                <div class="admin-form-group">
-                    <label>Бейдж</label>
-                    <select id="editProductBadge">
-                        <option value="">Немає</option>
-                        <option value="new">Новинка</option>
-                        <option value="sale">Знижка</option>
-                        <option value="hit">Хіт</option>
-                    </select>
-                </div>
-                <div class="admin-btn-row">
-                    <button class="btn btn-primary" id="saveProduct">💾 Зберегти</button>
-                    <button class="btn btn-outline" id="cancelEditProduct">Скасувати</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<script src="script.js"></script>
+<!-- Server Data Injected into JS -->
+<script>
+    window.INITIAL_PRODUCTS = {{ products_json|safe }};
+    window.INITIAL_SETTINGS = {{ settings_json|safe }};
+</script>
+<script src="/script.js"></script>
 </body>
 </html>
+

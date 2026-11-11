@@ -28,30 +28,10 @@ const defaultSettings = {
     fb: "#"
 };
 
-// ===== Load data from localStorage =====
-function loadProducts() {
-    const saved = localStorage.getItem('pk_products');
-    return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultProducts));
-}
-
-function saveProducts(products) {
-    localStorage.setItem('pk_products', JSON.stringify(products));
-}
-
-function loadSettings() {
-    const saved = localStorage.getItem('pk_settings');
-    return saved ? JSON.parse(saved) : { ...defaultSettings };
-}
-
-function saveSettings(settings) {
-    localStorage.setItem('pk_settings', JSON.stringify(settings));
-}
-
-// ===== State =====
-let products = loadProducts();
-let settings = loadSettings();
+// ===== State initialization =====
+let products = (window.INITIAL_PRODUCTS && window.INITIAL_PRODUCTS.length) ? window.INITIAL_PRODUCTS : defaultProducts;
+let settings = (window.INITIAL_SETTINGS && Object.keys(window.INITIAL_SETTINGS).length) ? window.INITIAL_SETTINGS : defaultSettings;
 let cart = [];
-let isAdmin = false;
 
 // ===== DOM Elements =====
 const productsGrid = document.getElementById('productsGrid');
@@ -74,65 +54,27 @@ const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 const nav = document.getElementById('mainNav');
 const header = document.getElementById('header');
 const adminLoginLink = document.getElementById('adminLoginLink');
-const adminLoginModal = document.getElementById('adminLoginModal');
-const adminLoginClose = document.getElementById('adminLoginClose');
-const adminLoginForm = document.getElementById('adminLoginForm');
-const adminError = document.getElementById('adminError');
-const adminPanel = document.getElementById('adminPanel');
-const adminLogout = document.getElementById('adminLogout');
 
-// ===== Apply Settings to Page =====
-function applySettings() {
-    const s = settings;
-    const phoneEl = document.getElementById('sitePhone');
-    const emailEl = document.getElementById('siteEmail');
-    const addressEl = document.getElementById('siteAddress');
-    const hoursEl = document.getElementById('siteHours');
-
-    if (phoneEl) { phoneEl.textContent = s.phone; phoneEl.href = 'tel:' + s.phone.replace(/\s/g, ''); }
-    if (emailEl) { emailEl.textContent = s.email; emailEl.href = 'mailto:' + s.email; }
-    if (addressEl) addressEl.textContent = s.address;
-    if (hoursEl) hoursEl.textContent = s.hours;
-
-    // Hero
-    const heroTitle = document.querySelector('.hero-title');
-    if (heroTitle) heroTitle.innerHTML = `${s.heroTitle1}<br><span>${s.heroTitle2}</span>`;
-    const heroDesc = document.querySelector('.hero-desc');
-    if (heroDesc) heroDesc.textContent = s.heroDesc;
-
-    // Promo
-    const ctaSection = document.querySelector('.cta p strong');
-    if (ctaSection) ctaSection.textContent = s.promo;
-
-    // Social
-    const insta = document.getElementById('socialInsta');
-    const tg = document.getElementById('socialTg');
-    const fb = document.getElementById('socialFb');
-    if (insta) insta.href = s.insta || '#';
-    if (tg) tg.href = s.tg || '#';
-    if (fb) fb.href = s.fb || '#';
-}
-
-// ===== Render Products =====
+// ===== Render Products Function =====
 function renderProducts(filter = 'all') {
+    if (!productsGrid) return;
     const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
     productsGrid.innerHTML = filtered.map((p, i) => `
-        <div class="product-card" style="animation-delay: ${i * 0.08}s" data-category="${p.category}">
+        <div class="product-card" style="animation-delay: ${i * 0.05}s" data-category="${p.category}">
             <div class="product-image">
                 ${p.image
-            ? `<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="product-emoji" style="display:none">${p.emoji}</span>`
-            : `<span class="product-emoji">${p.emoji}</span>`
-        }
-                ${p.badge ? `<span class="product-badge badge-${p.badge}">${p.badge === 'new' ? 'Новинка' : p.badge === 'sale' ? 'Знижка' : 'Хіт'
-            }</span>` : ''}
+                    ? `<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="product-emoji" style="display:none">${p.emoji || '🪴'}</span>`
+                    : `<span class="product-emoji">${p.emoji || '🪴'}</span>`
+                }
+                ${p.badge ? `<span class="product-badge badge-${p.badge}">${p.badge === 'new' ? 'Новинка' : p.badge === 'sale' ? 'Знижка' : 'Хіт'}</span>` : ''}
             </div>
             <div class="product-info">
                 <h3 class="product-name">${p.name}</h3>
-                <p class="product-size">${p.size}</p>
+                <p class="product-size">${p.size || ''}</p>
                 <div class="product-bottom">
                     <div class="product-price">
                         <span class="price-current">${p.price} грн</span>
-                        ${p.oldPrice ? `<span class="price-old">${p.oldPrice} грн</span>` : ''}
+                        ${p.oldPrice && p.oldPrice > p.price ? `<span class="price-old">${p.oldPrice} грн</span>` : ''}
                     </div>
                     <button class="add-to-cart-btn" data-id="${p.id}" title="Додати в кошик">+</button>
                 </div>
@@ -140,7 +82,8 @@ function renderProducts(filter = 'all') {
         </div>
     `).join('');
 
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    // Bind add-to-cart buttons
+    productsGrid.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.addEventListener('click', () => addToCart(parseInt(btn.dataset.id)));
     });
 }
@@ -148,7 +91,7 @@ function renderProducts(filter = 'all') {
 // ===== Filter Buttons =====
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.filter-btn.active')?.classList.remove('active');
         btn.classList.add('active');
         renderProducts(btn.dataset.filter);
     });
@@ -159,296 +102,307 @@ function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
     const existing = cart.find(item => item.id === productId);
-    if (existing) { existing.qty++; } else { cart.push({ ...product, qty: 1 }); }
+    if (existing) {
+        existing.qty++;
+    } else {
+        cart.push({ ...product, qty: 1 });
+    }
     updateCart();
     showToast(`${product.name} додано в кошик!`);
     const btn = document.querySelector(`.add-to-cart-btn[data-id="${productId}"]`);
     if (btn) {
-        btn.classList.add('added'); btn.textContent = '✓';
-        setTimeout(() => { btn.classList.remove('added'); btn.textContent = '+'; }, 1200);
+        btn.classList.add('added');
+        btn.textContent = '✓';
+        setTimeout(() => {
+            btn.classList.remove('added');
+            btn.textContent = '+';
+        }, 1200);
     }
 }
 
-function removeFromCart(productId) { cart = cart.filter(item => item.id !== productId); updateCart(); }
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    updateCart();
+}
 
 function changeQty(productId, delta) {
     const item = cart.find(i => i.id === productId);
     if (!item) return;
     item.qty += delta;
-    if (item.qty <= 0) { removeFromCart(productId); return; }
-    updateCart();
-}
-// Make accessible globally for onclick handlers
-window.removeFromCart = removeFromCart;
-window.changeQty = changeQty;
-
-function getCartTotal() { return cart.reduce((sum, item) => sum + item.price * item.qty, 0); }
-
-function updateCart() {
-    const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-    cartCount.textContent = totalItems;
-    cartCount.classList.toggle('visible', totalItems > 0);
-    if (cart.length === 0) {
-        cartItems.innerHTML = '<p class="cart-empty">Кошик порожній</p>';
-        cartFooter.style.display = 'none';
+    if (item.qty <= 0) {
+        removeFromCart(productId);
     } else {
-        cartItems.innerHTML = cart.map(item => `
-            <div class="cart-item">
-                <div class="cart-item-img">
-                    ${item.image ? `<img src="${item.image}" alt="${item.name}">` : item.emoji}
-                </div>
-                <div class="cart-item-info">
-                    <p class="cart-item-name">${item.name}</p>
-                    <p class="cart-item-price">${item.price} грн</p>
-                    <div class="cart-item-qty">
-                        <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
-                        <span>${item.qty}</span>
-                        <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
-                    </div>
-                </div>
-                <button class="cart-item-remove" onclick="removeFromCart(${item.id})">✕</button>
-            </div>
-        `).join('');
-        cartFooter.style.display = 'block';
-        cartTotal.textContent = `${getCartTotal()} грн`;
+        updateCart();
     }
 }
 
-// ===== Cart Sidebar Toggle =====
-function openCart() { cartOverlay.classList.add('active'); cartSidebar.classList.add('active'); document.body.style.overflow = 'hidden'; }
-function closeCart() { cartOverlay.classList.remove('active'); cartSidebar.classList.remove('active'); document.body.style.overflow = ''; }
-cartBtn.addEventListener('click', openCart);
-cartClose.addEventListener('click', closeCart);
-cartOverlay.addEventListener('click', closeCart);
+function getCartTotal() {
+    return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+}
 
-// ===== Order Modal =====
-checkoutBtn.addEventListener('click', () => {
-    closeCart();
-    setTimeout(() => { orderTotal.textContent = `${getCartTotal()} грн`; orderModal.classList.add('active'); document.body.style.overflow = 'hidden'; }, 300);
-});
-modalClose.addEventListener('click', () => { orderModal.classList.remove('active'); document.body.style.overflow = ''; });
-orderModal.addEventListener('click', (e) => { if (e.target === orderModal) { orderModal.classList.remove('active'); document.body.style.overflow = ''; } });
-orderForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    orderModal.classList.remove('active'); document.body.style.overflow = '';
-    cart = []; updateCart();
-    showToast('✅ Замовлення оформлено! Ми зв\'яжемось з вами найближчим часом.');
-    orderForm.reset();
-});
+function getCartCount() {
+    return cart.reduce((sum, item) => sum + item.qty, 0);
+}
 
-// ===== Contact Form =====
-contactForm.addEventListener('submit', (e) => { e.preventDefault(); showToast('✅ Повідомлення надіслано! Дякуємо!'); contactForm.reset(); });
+function updateCart() {
+    if (cartCount) cartCount.textContent = getCartCount();
+    if (!cartItems) return;
 
-// ===== Toast =====
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="cart-empty">Кошик порожній</p>';
+        if (cartFooter) cartFooter.style.display = 'none';
+        return;
+    }
+
+    if (cartFooter) cartFooter.style.display = 'block';
+    if (cartTotal) cartTotal.textContent = `${getCartTotal()} грн`;
+
+    cartItems.innerHTML = cart.map(item => `
+        <div class="cart-item">
+            <div class="cart-item-thumb">
+                ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '🪴')}
+            </div>
+            <div class="cart-item-info">
+                <h4>${item.name}</h4>
+                <div class="cart-item-price">${item.price * item.qty} грн</div>
+                <div class="cart-item-qty">
+                    <button onclick="changeQty(${item.id}, -1)">−</button>
+                    <span>${item.qty}</span>
+                    <button onclick="changeQty(${item.id}, 1)">+</button>
+                </div>
+            </div>
+            <button class="cart-item-remove" onclick="removeFromCart(${item.id})">✕</button>
+        </div>
+    `).join('');
+}
+window.changeQty = changeQty;
+window.removeFromCart = removeFromCart;
+
+// ===== Cart Drawer Toggle =====
+function openCart() {
+    if (cartSidebar) cartSidebar.classList.add('active');
+    if (cartOverlay) cartOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+    if (cartSidebar) cartSidebar.classList.remove('active');
+    if (cartOverlay) cartOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+if (cartBtn) cartBtn.addEventListener('click', openCart);
+if (cartClose) cartClose.addEventListener('click', closeCart);
+if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+
+// ===== Order Modal & Checkout =====
+if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', () => {
+        closeCart();
+        setTimeout(() => {
+            if (orderTotal) orderTotal.textContent = `${getCartTotal()} грн`;
+            if (orderModal) orderModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }, 300);
+    });
+}
+
+if (modalClose) {
+    modalClose.addEventListener('click', () => {
+        if (orderModal) orderModal.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+}
+
+if (orderModal) {
+    orderModal.addEventListener('click', (e) => {
+        if (e.target === orderModal) {
+            orderModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+}
+
+// Order Form Submission (Sends to Flask SQLite API)
+if (orderForm) {
+    orderForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inputs = orderForm.querySelectorAll('input, textarea');
+        const orderData = {
+            name: inputs[0] ? inputs[0].value : '',
+            phone: inputs[1] ? inputs[1].value : '',
+            city: inputs[2] ? inputs[2].value : '',
+            warehouse: inputs[3] ? inputs[3].value : '',
+            comment: inputs[4] ? inputs[4].value : '',
+            total: getCartTotal(),
+            items: cart.map(item => ({ name: item.name, quantity: item.qty, price: item.price }))
+        };
+
+        // Send order to Flask SQLite backend
+        fetch('/api/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        }).catch(err => console.log('Offline order fallback:', err));
+
+        if (orderModal) orderModal.classList.remove('active');
+        document.body.style.overflow = '';
+        cart = [];
+        updateCart();
+        showToast('✅ Замовлення оформлено! Ми зв\'яжемось з вами найближчим часом.');
+        orderForm.reset();
+    });
+}
+
+// ===== Contact Form (Sends to Flask SQLite API) =====
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inputs = contactForm.querySelectorAll('input, textarea');
+        const contactData = {
+            name: inputs[0] ? inputs[0].value : '',
+            phone: inputs[1] ? inputs[1].value : '',
+            email: inputs[2] ? inputs[2].value : '',
+            message: inputs[3] ? inputs[3].value : ''
+        };
+
+        fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(contactData)
+        }).catch(err => console.log('Contact send error:', err));
+
+        showToast('✅ Повідомлення надіслано! Дякуємо!');
+        contactForm.reset();
+    });
+}
+
+// ===== Toast Notification =====
 function showToast(message) {
-    toast.textContent = message; toast.classList.add('visible');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('visible');
     setTimeout(() => toast.classList.remove('visible'), 3000);
 }
 
 // ===== Mobile Menu =====
-mobileMenuBtn.addEventListener('click', () => {
-    nav.classList.toggle('open');
-    const spans = mobileMenuBtn.querySelectorAll('span');
-    if (nav.classList.contains('open')) {
-        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-        spans[1].style.opacity = '0';
-        spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
-    } else {
-        spans[0].style.transform = ''; spans[1].style.opacity = ''; spans[2].style.transform = '';
-    }
-});
-nav.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-        nav.classList.remove('open');
+if (mobileMenuBtn && nav) {
+    mobileMenuBtn.addEventListener('click', () => {
+        nav.classList.toggle('open');
         const spans = mobileMenuBtn.querySelectorAll('span');
-        spans[0].style.transform = ''; spans[1].style.opacity = ''; spans[2].style.transform = '';
+        if (nav.classList.contains('open')) {
+            spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+            spans[1].style.opacity = '0';
+            spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+        } else {
+            spans[0].style.transform = '';
+            spans[1].style.opacity = '';
+            spans[2].style.transform = '';
+        }
     });
-});
+
+    nav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            nav.classList.remove('open');
+            const spans = mobileMenuBtn.querySelectorAll('span');
+            spans[0].style.transform = '';
+            spans[1].style.opacity = '';
+            spans[2].style.transform = '';
+        });
+    });
+}
 
 // ===== Scroll Header =====
-window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+if (header) {
+    window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+}
 
 // ===== Smooth Scroll =====
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', (e) => {
         e.preventDefault();
         const target = document.querySelector(anchor.getAttribute('href'));
-        if (target) { window.scrollTo({ top: target.getBoundingClientRect().top + window.pageYOffset - 72, behavior: 'smooth' }); }
+        if (target) {
+            window.scrollTo({
+                top: target.getBoundingClientRect().top + window.pageYOffset - 72,
+                behavior: 'smooth'
+            });
+        }
     });
 });
 
-// ============================
-// ===== ADMIN PANEL =====
-// ============================
+// ===== Admin Link =====
+if (adminLoginLink) {
+    adminLoginLink.addEventListener('click', (e) => {
+        // Direct link to AdminLTE admin panel
+        window.location.href = '/admin';
+    });
+}
 
-// Admin credentials (hashed for basic obfuscation)
-const ADMIN_USER = 'nzrka';
-const ADMIN_PASS = '20112009Gg';
+// ===== Apply Settings Helper =====
+function applySettings() {
+    const s = settings;
+    const phoneEl = document.getElementById('sitePhone');
+    const emailEl = document.getElementById('siteEmail');
+    const addressEl = document.getElementById('siteAddress');
+    const hoursEl = document.getElementById('siteHours');
 
-// Open admin login modal
-adminLoginLink.addEventListener('click', () => {
-    adminLoginModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    adminError.textContent = '';
-});
-
-adminLoginClose.addEventListener('click', () => {
-    adminLoginModal.classList.remove('active');
-    document.body.style.overflow = '';
-});
-
-adminLoginModal.addEventListener('click', (e) => {
-    if (e.target === adminLoginModal) { adminLoginModal.classList.remove('active'); document.body.style.overflow = ''; }
-});
-
-// Login
-adminLoginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const user = document.getElementById('adminUser').value;
-    const pass = document.getElementById('adminPass').value;
-
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        isAdmin = true;
-        adminLoginModal.classList.remove('active');
-        openAdminPanel();
-        showToast('✅ Ви увійшли в адмін панель');
-        adminLoginForm.reset();
-        adminError.textContent = '';
-    } else {
-        adminError.textContent = '❌ Невірний логін або пароль';
+    if (phoneEl && s.phone) {
+        phoneEl.textContent = s.phone;
+        phoneEl.href = 'tel:' + s.phone.replace(/\s/g, '');
     }
-});
+    if (emailEl && s.email) {
+        emailEl.textContent = s.email;
+        emailEl.href = 'mailto:' + s.email;
+    }
+    if (addressEl && s.address) addressEl.textContent = s.address;
+    if (hoursEl && s.hours) hoursEl.textContent = s.hours;
 
-// Logout
-adminLogout.addEventListener('click', () => {
-    isAdmin = false;
-    adminPanel.classList.remove('active');
-    document.body.style.overflow = '';
-    showToast('Ви вийшли з адмін панелі');
-});
+    const heroTitle = document.querySelector('.hero-title');
+    if (heroTitle && s.heroTitle1) {
+        heroTitle.innerHTML = `${s.heroTitle1}<br><span>${s.heroTitle2 || ''}</span>`;
+    }
+    const heroDesc = document.querySelector('.hero-desc');
+    if (heroDesc && s.heroDesc) heroDesc.textContent = s.heroDesc;
 
-// Open admin panel
-function openAdminPanel() {
-    adminPanel.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    populateAdminFields();
-    renderAdminProducts();
+    const ctaPromo = document.querySelector('.cta p strong');
+    if (ctaPromo && s.promo) ctaPromo.textContent = s.promo;
+
+    const insta = document.getElementById('socialInsta');
+    const tg = document.getElementById('socialTg');
+    const fb = document.getElementById('socialFb');
+    if (insta && s.insta) insta.href = s.insta;
+    if (tg && s.tg) tg.href = s.tg;
+    if (fb && s.fb) fb.href = s.fb;
 }
 
-// Populate admin fields from settings
-function populateAdminFields() {
-    document.getElementById('adminPhone').value = settings.phone;
-    document.getElementById('adminEmail').value = settings.email;
-    document.getElementById('adminAddress').value = settings.address;
-    document.getElementById('adminHours').value = settings.hours;
-    document.getElementById('adminHeroTitle1').value = settings.heroTitle1;
-    document.getElementById('adminHeroTitle2').value = settings.heroTitle2;
-    document.getElementById('adminHeroDesc').value = settings.heroDesc;
-    document.getElementById('adminPromo').value = settings.promo;
-    document.getElementById('adminInsta').value = settings.insta;
-    document.getElementById('adminTg').value = settings.tg;
-    document.getElementById('adminFb').value = settings.fb;
+// ===== Sync with Flask SQLite Backend if opened as a standalone static file =====
+async function syncWithBackend() {
+    try {
+        const [prodRes, settRes] = await Promise.all([
+            fetch('/api/products'),
+            fetch('/api/settings')
+        ]);
+        if (prodRes.ok) {
+            const apiProds = await prodRes.json();
+            if (Array.isArray(apiProds) && apiProds.length > 0) {
+                products = apiProds;
+                renderProducts();
+            }
+        }
+        if (settRes.ok) {
+            const apiSett = await settRes.json();
+            if (apiSett && Object.keys(apiSett).length > 0) {
+                settings = { ...settings, ...apiSett };
+                applySettings();
+            }
+        }
+    } catch (e) {
+        // Offline or direct file
+    }
 }
 
-// Admin tabs
-document.querySelectorAll('.admin-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-    });
-});
-
-// Save contacts
-document.getElementById('saveContacts').addEventListener('click', () => {
-    settings.phone = document.getElementById('adminPhone').value;
-    settings.email = document.getElementById('adminEmail').value;
-    settings.address = document.getElementById('adminAddress').value;
-    settings.hours = document.getElementById('adminHours').value;
-    saveSettings(settings);
-    applySettings();
-    showToast('✅ Контакти збережено!');
-});
-
-// Save hero
-document.getElementById('saveHero').addEventListener('click', () => {
-    settings.heroTitle1 = document.getElementById('adminHeroTitle1').value;
-    settings.heroTitle2 = document.getElementById('adminHeroTitle2').value;
-    settings.heroDesc = document.getElementById('adminHeroDesc').value;
-    settings.promo = document.getElementById('adminPromo').value;
-    saveSettings(settings);
-    applySettings();
-    showToast('✅ Головну сторінку збережено!');
-});
-
-// Save social
-document.getElementById('saveSocial').addEventListener('click', () => {
-    settings.insta = document.getElementById('adminInsta').value;
-    settings.tg = document.getElementById('adminTg').value;
-    settings.fb = document.getElementById('adminFb').value;
-    saveSettings(settings);
-    applySettings();
-    showToast('✅ Соцмережі збережено!');
-});
-
-// ===== Admin Products =====
-function renderAdminProducts() {
-    const list = document.getElementById('adminProductsList');
-    list.innerHTML = products.map(p => `
-        <div class="admin-product-item" onclick="openProductEdit(${p.id})">
-            <div class="admin-product-thumb">
-                ${p.image ? `<img src="${p.image}" alt="${p.name}">` : p.emoji}
-            </div>
-            <div class="admin-product-meta">
-                <strong>${p.name}</strong>
-                <span>${p.size} — ${p.price} грн</span>
-            </div>
-        </div>
-    `).join('');
-}
-
-function openProductEdit(productId) {
-    const p = products.find(pr => pr.id === productId);
-    if (!p) return;
-    document.getElementById('editProductId').value = p.id;
-    document.getElementById('editProductName').value = p.name;
-    document.getElementById('editProductSize').value = p.size;
-    document.getElementById('editProductPrice').value = p.price;
-    document.getElementById('editProductOldPrice').value = p.oldPrice || 0;
-    document.getElementById('editProductImage').value = p.image || '';
-    document.getElementById('editProductEmoji').value = p.emoji;
-    document.getElementById('editProductCategory').value = p.category;
-    document.getElementById('editProductBadge').value = p.badge || '';
-    document.getElementById('adminProductEdit').style.display = 'flex';
-}
-window.openProductEdit = openProductEdit;
-
-document.getElementById('cancelEditProduct').addEventListener('click', () => {
-    document.getElementById('adminProductEdit').style.display = 'none';
-});
-
-document.getElementById('saveProduct').addEventListener('click', () => {
-    const id = parseInt(document.getElementById('editProductId').value);
-    const idx = products.findIndex(p => p.id === id);
-    if (idx === -1) return;
-
-    products[idx].name = document.getElementById('editProductName').value;
-    products[idx].size = document.getElementById('editProductSize').value;
-    products[idx].price = parseInt(document.getElementById('editProductPrice').value) || 0;
-    products[idx].oldPrice = parseInt(document.getElementById('editProductOldPrice').value) || 0;
-    products[idx].image = document.getElementById('editProductImage').value;
-    products[idx].emoji = document.getElementById('editProductEmoji').value;
-    products[idx].category = document.getElementById('editProductCategory').value;
-    products[idx].badge = document.getElementById('editProductBadge').value;
-
-    saveProducts(products);
-    renderProducts();
-    renderAdminProducts();
-    document.getElementById('adminProductEdit').style.display = 'none';
-    showToast('✅ Товар збережено!');
-});
-
-// ===== Init =====
+// ===== Initial Execution =====
 applySettings();
 renderProducts();
+syncWithBackend();
